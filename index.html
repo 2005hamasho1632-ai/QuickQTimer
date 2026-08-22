@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>QuickQTimer</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#111;color:white;font-family:-apple-system,sans-serif;overflow:hidden}
+body{padding:12px}
+#timer{
+ background:#a8f5a8;color:#111;border-radius:18px;
+ font-size:22vw;font-weight:bold;text-align:center;
+ padding:20px 2px;font-variant-numeric:tabular-nums
+}
+.info{display:flex;justify-content:space-between;font-size:20px;padding:10px}
+.slide{background:#292929;border-radius:15px;padding:12px}
+input{width:100%}
+#buttons{height:45%;display:flex;flex-direction:column;gap:12px;margin-top:12px}
+button{flex:1;border-radius:18px;border:1px solid #666;background:#333;color:white;font-size:30px;font-weight:bold}
+#stop{color:#ff7777}
+</style>
+</head>
+<body>
+
+<div id="timer">00:00.0</div>
+
+<div class="info">
+<span id="clock">--:--:--</span>
+<span id="adj">補正 0.0秒</span>
+</div>
+
+<div class="slide">
+<input id="slider" type="range" min="-20" max="20" step="0.1" value="0">
+</div>
+
+<div id="buttons">
+<button id="stop">■ 停止</button>
+<button id="start">▶ タップ → 0からスタート</button>
+</div>
+
+<script>
+let run=false,start=0,offset=0,last=0;
+const t=document.getElementById("timer");
+const s=document.getElementById("slider");
+const a=document.getElementById("adj");
+
+function format(ms){
+ if(ms<0)ms=0;
+ let x=ms/1000;
+ let m=Math.floor(x/60);
+ let sec=Math.floor(x%60);
+ let d=Math.floor((x-Math.floor(x))*10);
+ return String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0")+"."+d;
+}
+
+function update(){
+ if(run){
+   last=performance.now()-start+offset*1000;
+   t.textContent=format(last);
+   requestAnimationFrame(update);
+ }
+}
+
+document.getElementById("start").onclick=()=>{
+ run=true;
+ offset=0;
+ s.value=0;
+ a.textContent="補正 0.0秒";
+ start=performance.now();
+ update();
+};
+
+document.getElementById("stop").onclick=()=>{
+ run=false;
+};
+
+s.oninput=()=>{
+ let newOffset=parseFloat(s.value);
+ if(run){
+   offset=newOffset;
+ }else{
+   last=newOffset*1000;
+   t.textContent=format(last);
+ }
+ a.textContent="補正 "+(newOffset>=0?"+":"")+newOffset.toFixed(1)+"秒";
+};
+
+setInterval(()=>{
+ let d=new Date();
+ document.getElementById("clock").textContent=
+ String(d.getHours()).padStart(2,"0")+":"+
+ String(d.getMinutes()).padStart(2,"0")+":"+
+ String(d.getSeconds()).padStart(2,"0");
+},250);
+</script>
+</body>
+</html>
