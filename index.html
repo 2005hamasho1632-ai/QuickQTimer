@@ -42,144 +42,299 @@ body{
 #app{
   position:absolute;
   inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  padding:
-    max(18px,env(safe-area-inset-top))
-    18px
-    max(18px,env(safe-area-inset-bottom));
+  overflow:hidden;
 }
+
+/* =========================
+   時計
+========================= */
 
 #clock{
   position:absolute;
   top:max(18px,env(safe-area-inset-top));
   left:22px;
+
   font-size:17px;
   font-weight:600;
   color:#777;
   letter-spacing:.5px;
-}
 
-#settingsButton{
-  position:absolute;
-  top:max(12px,env(safe-area-inset-top));
-  right:14px;
-  width:52px;
-  height:52px;
-  border:0;
-  border-radius:50%;
-  background:#151515;
-  color:#aaa;
-  font-size:27px;
-  line-height:52px;
-  text-align:center;
   z-index:20;
 }
 
+/* =========================
+   設定ボタン
+========================= */
+
+#settingsButton{
+  position:absolute;
+
+  top:max(12px,env(safe-area-inset-top));
+  right:14px;
+
+  width:52px;
+  height:52px;
+
+  border:0;
+  border-radius:50%;
+
+  background:#151515;
+  color:#aaa;
+
+  font-size:27px;
+  line-height:52px;
+  text-align:center;
+
+  z-index:20;
+}
+
+/* =========================
+   STARTエリア
+
+   この枠の中だけ
+   スタート / 再スタート
+========================= */
+
+#startArea{
+  position:absolute;
+
+  /*
+    時計・設定ボタンの
+    すぐ下から開始
+  */
+  top:max(
+    78px,
+    calc(env(safe-area-inset-top) + 62px)
+  );
+
+  /*
+    左右はほぼ画面いっぱい
+  */
+  left:8px;
+  right:8px;
+
+  /*
+    補正スライダーより
+    十分上で終了
+  */
+  bottom:max(
+    245px,
+    calc(env(safe-area-inset-bottom) + 220px)
+  );
+
+  border:2px solid #444;
+  border-radius:18px;
+
+  z-index:5;
+
+  touch-action:manipulation;
+}
+
+/* START表示 */
+
+#startArea::after{
+  content:"START";
+
+  position:absolute;
+
+  left:50%;
+  bottom:12px;
+
+  transform:translateX(-50%);
+
+  color:#3f3f3f;
+
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:3px;
+
+  pointer-events:none;
+}
+
+/* =========================
+   タイマー
+========================= */
+
 #timerArea{
-  width:100%;
+  position:absolute;
+  inset:0;
+
   display:flex;
-  justify-content:center;
   align-items:center;
-  margin-top:-80px;
+  justify-content:center;
+
+  pointer-events:none;
 }
 
 #timer{
   font-family:Arial,sans-serif;
-  font-size:clamp(82px,23vw,190px);
+
+  font-size:clamp(
+    82px,
+    23vw,
+    190px
+  );
+
   font-weight:700;
+
   line-height:1;
+
   letter-spacing:-0.07em;
+
   color:#ffffff;
+
   white-space:nowrap;
-  font-variant-numeric:tabular-nums;
-  font-feature-settings:"tnum";
+
+  font-variant-numeric:
+    tabular-nums;
+
+  font-feature-settings:
+    "tnum";
+
   text-align:center;
+
+  pointer-events:none;
 }
+
+/* =========================
+   タッチ時フラッシュ
+========================= */
 
 #flash{
   position:absolute;
   inset:0;
-  background:rgba(255,255,255,.08);
+
+  background:
+    rgba(255,255,255,.08);
+
   opacity:0;
+
   pointer-events:none;
+
+  z-index:50;
 }
 
 #flash.active{
-  animation:flash .10s ease-out;
+  animation:
+    flash .10s ease-out;
 }
 
 @keyframes flash{
-  0%{opacity:1;}
-  100%{opacity:0;}
+
+  0%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+
 }
+
+/* =========================
+   補正
+========================= */
 
 #adjustPanel{
   position:absolute;
+
   left:6%;
   right:6%;
-  bottom:max(70px,calc(env(safe-area-inset-bottom) + 48px));
+
+  bottom:max(
+    70px,
+    calc(
+      env(safe-area-inset-bottom)
+      + 48px
+    )
+  );
+
   z-index:10;
 }
 
 #correctionValue{
   text-align:center;
+
   color:#aaa;
+
   font-size:24px;
   font-weight:600;
+
   margin-bottom:12px;
 }
 
 .sliderWrap{
   position:relative;
+
   width:100%;
   height:50px;
+
   display:flex;
   align-items:center;
 }
 
 .centerMark{
   position:absolute;
+
   left:50%;
   top:3px;
   bottom:3px;
+
   width:3px;
-  transform:translateX(-50%);
+
+  transform:
+    translateX(-50%);
+
   background:#fff;
+
   border-radius:2px;
+
   opacity:.75;
+
   pointer-events:none;
 }
 
 #correction{
   position:relative;
+
   z-index:2;
+
   width:100%;
   height:6px;
+
   appearance:none;
   -webkit-appearance:none;
+
   background:#666;
+
   border-radius:10px;
+
   outline:none;
 }
 
 #correction::-webkit-slider-thumb{
   appearance:none;
   -webkit-appearance:none;
+
   width:42px;
   height:42px;
+
   border-radius:50%;
+
   background:#fff;
+
   border:2px solid #aaa;
 }
 
 .sliderLabels{
   position:relative;
+
   height:28px;
+
   margin-top:1px;
+
   color:#555;
+
   font-size:16px;
 }
 
@@ -193,8 +348,12 @@ body{
 
 .sliderLabels .center{
   left:50%;
-  transform:translateX(-50%);
+
+  transform:
+    translateX(-50%);
+
   color:#999;
+
   font-weight:700;
 }
 
@@ -202,17 +361,33 @@ body{
   right:0;
 }
 
+/* =========================
+   設定画面
+========================= */
+
 #settings{
   position:absolute;
   inset:0;
-  background:rgba(0,0,0,.97);
+
+  background:
+    rgba(0,0,0,.97);
+
   z-index:100;
+
   display:none;
+
   overflow:auto;
+
   padding:
-    max(28px,env(safe-area-inset-top))
+    max(
+      28px,
+      env(safe-area-inset-top)
+    )
     22px
-    max(30px,env(safe-area-inset-bottom));
+    max(
+      30px,
+      env(safe-area-inset-bottom)
+    );
 }
 
 #settings.open{
@@ -221,8 +396,12 @@ body{
 
 .settingsHeader{
   display:flex;
+
   align-items:center;
-  justify-content:space-between;
+
+  justify-content:
+    space-between;
+
   margin-bottom:28px;
 }
 
@@ -234,10 +413,14 @@ body{
 #closeSettings{
   width:50px;
   height:50px;
+
   border:0;
+
   border-radius:50%;
+
   background:#222;
   color:#fff;
+
   font-size:28px;
 }
 
@@ -247,72 +430,110 @@ body{
 
 .settingLabel{
   color:#999;
+
   font-size:15px;
+
   margin-bottom:10px;
 }
 
 .settingValue{
   color:#fff;
+
   font-size:20px;
+
   font-weight:600;
+
   margin-bottom:8px;
 }
 
 .settingRange{
   width:100%;
   height:6px;
+
   appearance:none;
   -webkit-appearance:none;
+
   background:#555;
+
   border-radius:8px;
 }
 
 .settingRange::-webkit-slider-thumb{
   appearance:none;
   -webkit-appearance:none;
+
   width:34px;
   height:34px;
+
   border-radius:50%;
+
   background:#fff;
 }
 
+/* =========================
+   フォント
+========================= */
+
 .fontGrid{
   display:grid;
-  grid-template-columns:1fr 1fr;
+
+  grid-template-columns:
+    1fr 1fr;
+
   gap:10px;
 }
 
 .fontButton{
   min-height:56px;
-  border:1px solid #333;
+
+  border:
+    1px solid #333;
+
   border-radius:14px;
+
   background:#111;
+
   color:#bbb;
+
   font-size:18px;
 }
 
 .fontButton.selected{
-  border:2px solid #fff;
+  border:
+    2px solid #fff;
+
   color:#fff;
+
   background:#222;
 }
 
+/* =========================
+   色
+========================= */
+
 .colorGrid{
   display:flex;
+
   flex-wrap:wrap;
+
   gap:14px;
 }
 
 .colorButton{
   width:52px;
   height:52px;
+
   border-radius:50%;
-  border:3px solid transparent;
+
+  border:
+    3px solid transparent;
 }
 
 .colorButton.selected{
   border-color:#fff;
-  transform:scale(1.12);
+
+  transform:
+    scale(1.12);
 }
 
 .white{background:#ffffff;}
@@ -323,31 +544,54 @@ body{
 .orange{background:#ff963f;}
 .cyan{background:#45f4ff;}
 
+/* =========================
+   プレビュー
+========================= */
+
 #preview{
   margin-top:30px;
+
   padding:24px 5px;
-  border-top:1px solid #222;
-  border-bottom:1px solid #222;
+
+  border-top:
+    1px solid #222;
+
+  border-bottom:
+    1px solid #222;
+
   text-align:center;
+
   font-size:58px;
+
   font-weight:700;
+
   white-space:nowrap;
-  font-variant-numeric:tabular-nums;
+
+  font-variant-numeric:
+    tabular-nums;
 }
 
 #resetSettings{
   width:100%;
   height:54px;
+
   margin-top:30px;
-  border:1px solid #333;
+
+  border:
+    1px solid #333;
+
   border-radius:14px;
+
   background:#111;
+
   color:#aaa;
+
   font-size:17px;
 }
 
 </style>
 </head>
+
 
 <body>
 
@@ -355,15 +599,36 @@ body{
 
   <div id="clock"></div>
 
-  <button id="settingsButton" aria-label="設定">⚙︎</button>
+  <button
+    id="settingsButton"
+    aria-label="設定">
+    ⚙︎
+  </button>
 
-  <div id="timerArea">
-    <div id="timer">00:00.0</div>
+
+  <!--
+    この枠の中だけ
+    START可能
+  -->
+
+  <div id="startArea">
+
+    <div id="timerArea">
+
+      <div id="timer">
+        00:00.0
+      </div>
+
+    </div>
+
   </div>
+
 
   <div id="adjustPanel">
 
-    <div id="correctionValue">0.0秒</div>
+    <div id="correctionValue">
+      0.0秒
+    </div>
 
     <div class="sliderWrap">
 
@@ -381,9 +646,19 @@ body{
     </div>
 
     <div class="sliderLabels">
-      <span class="left">−20秒</span>
-      <span class="center">0</span>
-      <span class="right">＋20秒</span>
+
+      <span class="left">
+        −20秒
+      </span>
+
+      <span class="center">
+        0
+      </span>
+
+      <span class="right">
+        ＋20秒
+      </span>
+
     </div>
 
   </div>
@@ -393,6 +668,10 @@ body{
 </div>
 
 
+<!-- =========================
+     設定
+========================= -->
+
 <div id="settings">
 
   <div class="settingsHeader">
@@ -401,7 +680,9 @@ body{
       表示設定
     </div>
 
-    <button id="closeSettings">×</button>
+    <button id="closeSettings">
+      ×
+    </button>
 
   </div>
 
@@ -412,7 +693,9 @@ body{
       数字の大きさ
     </div>
 
-    <div class="settingValue" id="sizeValue">
+    <div
+      class="settingValue"
+      id="sizeValue">
       100%
     </div>
 
@@ -435,7 +718,9 @@ body{
       数字の太さ
     </div>
 
-    <div class="settingValue" id="weightValue">
+    <div
+      class="settingValue"
+      id="weightValue">
       太字
     </div>
 
@@ -469,14 +754,23 @@ body{
       <button
         class="fontButton"
         data-font="'Arial Black', Arial, sans-serif"
-        style="font-family:'Arial Black',Arial,sans-serif">
+        style="
+          font-family:
+          'Arial Black',
+          Arial,
+          sans-serif
+        ">
         ABC 123
       </button>
 
       <button
         class="fontButton"
         data-font="'Courier New', monospace"
-        style="font-family:'Courier New',monospace">
+        style="
+          font-family:
+          'Courier New',
+          monospace
+        ">
         00:12.3
       </button>
 
@@ -499,26 +793,47 @@ body{
 
     <div class="colorGrid">
 
-      <button class="colorButton white selected"
-        data-color="#ffffff" aria-label="白"></button>
+      <button
+        class="colorButton white selected"
+        data-color="#ffffff"
+        aria-label="白">
+      </button>
 
-      <button class="colorButton green"
-        data-color="#39ff88" aria-label="緑"></button>
+      <button
+        class="colorButton green"
+        data-color="#39ff88"
+        aria-label="緑">
+      </button>
 
-      <button class="colorButton red"
-        data-color="#ff4b4b" aria-label="赤"></button>
+      <button
+        class="colorButton red"
+        data-color="#ff4b4b"
+        aria-label="赤">
+      </button>
 
-      <button class="colorButton yellow"
-        data-color="#ffe04b" aria-label="黄色"></button>
+      <button
+        class="colorButton yellow"
+        data-color="#ffe04b"
+        aria-label="黄色">
+      </button>
 
-      <button class="colorButton blue"
-        data-color="#55aaff" aria-label="青"></button>
+      <button
+        class="colorButton blue"
+        data-color="#55aaff"
+        aria-label="青">
+      </button>
 
-      <button class="colorButton orange"
-        data-color="#ff963f" aria-label="オレンジ"></button>
+      <button
+        class="colorButton orange"
+        data-color="#ff963f"
+        aria-label="オレンジ">
+      </button>
 
-      <button class="colorButton cyan"
-        data-color="#45f4ff" aria-label="水色"></button>
+      <button
+        class="colorButton cyan"
+        data-color="#45f4ff"
+        aria-label="水色">
+      </button>
 
     </div>
 
@@ -539,41 +854,185 @@ body{
 <script>
 (() => {
 
-const timer = document.getElementById("timer");
-const clock = document.getElementById("clock");
-const correction = document.getElementById("correction");
-const correctionValue = document.getElementById("correctionValue");
-const adjustPanel = document.getElementById("adjustPanel");
-const flash = document.getElementById("flash");
-const settings = document.getElementById("settings");
-const settingsButton = document.getElementById("settingsButton");
-const closeSettings = document.getElementById("closeSettings");
-const sizeSetting = document.getElementById("sizeSetting");
-const sizeValue = document.getElementById("sizeValue");
-const weightSetting = document.getElementById("weightSetting");
-const weightValue = document.getElementById("weightValue");
-const preview = document.getElementById("preview");
+/* =========================
+   要素取得
+========================= */
+
+const timer =
+  document.getElementById("timer");
+
+const clock =
+  document.getElementById("clock");
+
+const startArea =
+  document.getElementById("startArea");
+
+const correction =
+  document.getElementById("correction");
+
+const correctionValue =
+  document.getElementById(
+    "correctionValue"
+  );
+
+const adjustPanel =
+  document.getElementById(
+    "adjustPanel"
+  );
+
+const flash =
+  document.getElementById("flash");
+
+const settings =
+  document.getElementById("settings");
+
+const settingsButton =
+  document.getElementById(
+    "settingsButton"
+  );
+
+const closeSettings =
+  document.getElementById(
+    "closeSettings"
+  );
+
+const sizeSetting =
+  document.getElementById(
+    "sizeSetting"
+  );
+
+const sizeValue =
+  document.getElementById(
+    "sizeValue"
+  );
+
+const weightSetting =
+  document.getElementById(
+    "weightSetting"
+  );
+
+const weightValue =
+  document.getElementById(
+    "weightValue"
+  );
+
+const preview =
+  document.getElementById("preview");
 
 
 /* =========================
    タイマー状態
-
-   Date.now()を使うことで
-   他アプリへ移動している間も
-   経過時間を保持
 ========================= */
 
 let running = false;
+
 let startRealTime = 0;
+
 let animationId = null;
 
 
 /* =========================
-   画面下部
-   スタート禁止範囲
+   タイマー状態保存
+
+   iOSがバックグラウンドで
+   QuickQを再読み込みしても
+   開始時刻を復元
 ========================= */
 
-const NO_START_BOTTOM = 80;
+const TIMER_STATE_KEY =
+  "quickq_timer_state";
+
+
+function saveTimerState(){
+
+  try{
+
+    const state = {
+
+      running:
+        running,
+
+      startRealTime:
+        startRealTime,
+
+      correction:
+        Number(
+          correction.value
+        )
+
+    };
+
+    localStorage.setItem(
+      TIMER_STATE_KEY,
+      JSON.stringify(state)
+    );
+
+  }
+  catch(e){}
+
+}
+
+
+function restoreTimerState(){
+
+  try{
+
+    const raw =
+      localStorage.getItem(
+        TIMER_STATE_KEY
+      );
+
+    if(!raw){
+      return false;
+    }
+
+    const state =
+      JSON.parse(raw);
+
+    if(
+      !state ||
+      state.running !== true ||
+      !Number.isFinite(
+        Number(
+          state.startRealTime
+        )
+      )
+    ){
+      return false;
+    }
+
+    running = true;
+
+    startRealTime =
+      Number(
+        state.startRealTime
+      );
+
+    if(
+      Number.isFinite(
+        Number(
+          state.correction
+        )
+      )
+    ){
+
+      correction.value =
+        Number(
+          state.correction
+        );
+
+    }
+
+    return true;
+
+  }
+  catch(e){
+
+    return false;
+
+  }
+
+}
 
 
 /* =========================
@@ -582,7 +1041,8 @@ const NO_START_BOTTOM = 80;
 
 function updateClock(){
 
-  const now = new Date();
+  const now =
+    new Date();
 
   clock.textContent =
     now.toLocaleTimeString(
@@ -597,7 +1057,11 @@ function updateClock(){
 }
 
 updateClock();
-setInterval(updateClock,1000);
+
+setInterval(
+  updateClock,
+  1000
+);
 
 
 /* =========================
@@ -607,27 +1071,41 @@ setInterval(updateClock,1000);
 function formatTime(milliseconds){
 
   milliseconds =
-    Math.max(0,milliseconds);
+    Math.max(
+      0,
+      milliseconds
+    );
 
   const totalTenths =
-    Math.floor(milliseconds / 100);
+    Math.floor(
+      milliseconds / 100
+    );
 
   const minutes =
-    Math.floor(totalTenths / 600);
+    Math.floor(
+      totalTenths / 600
+    );
 
   const seconds =
     Math.floor(
-      (totalTenths % 600) / 10
+      (totalTenths % 600)
+      / 10
     );
 
   const tenths =
     totalTenths % 10;
 
   return (
-    String(minutes).padStart(2,"0") +
-    ":" +
-    String(seconds).padStart(2,"0") +
-    "." +
+    String(minutes)
+      .padStart(2,"0")
+    +
+    ":"
+    +
+    String(seconds)
+      .padStart(2,"0")
+    +
+    "."
+    +
     tenths
   );
 
@@ -635,7 +1113,7 @@ function formatTime(milliseconds){
 
 
 /* =========================
-   現在の正しい経過時間
+   現在の経過時間
 ========================= */
 
 function getElapsed(){
@@ -645,11 +1123,15 @@ function getElapsed(){
   }
 
   const correctionMs =
-    Number(correction.value) * 1000;
+    Number(
+      correction.value
+    ) * 1000;
 
   return (
-    Date.now() -
-    startRealTime +
+    Date.now()
+    -
+    startRealTime
+    +
     correctionMs
   );
 
@@ -667,16 +1149,20 @@ function draw(){
   }
 
   timer.textContent =
-    formatTime(getElapsed());
+    formatTime(
+      getElapsed()
+    );
 
   animationId =
-    requestAnimationFrame(draw);
+    requestAnimationFrame(
+      draw
+    );
 
 }
 
 
 /* =========================
-   即時スタート / 再スタート
+   START / 再START
 ========================= */
 
 function startImmediately(){
@@ -687,78 +1173,69 @@ function startImmediately(){
   running = true;
 
   const correctionMs =
-    Number(correction.value) * 1000;
+    Number(
+      correction.value
+    ) * 1000;
 
   timer.textContent =
-    formatTime(correctionMs);
+    formatTime(
+      correctionMs
+    );
+
+  /*
+    開始時刻を即保存
+  */
+
+  saveTimerState();
+
 
   if(animationId){
-    cancelAnimationFrame(animationId);
+
+    cancelAnimationFrame(
+      animationId
+    );
+
   }
 
   animationId =
-    requestAnimationFrame(draw);
+    requestAnimationFrame(
+      draw
+    );
 
-  flash.classList.remove("active");
+
+  /* フラッシュ */
+
+  flash.classList.remove(
+    "active"
+  );
 
   void flash.offsetWidth;
 
-  flash.classList.add("active");
+  flash.classList.add(
+    "active"
+  );
 
 }
 
 
 /* =========================
-   タッチ判定
+   START枠
 
-   下部80pxでは
-   絶対にスタートしない
+   pointerdownなので
+   指が触れた瞬間スタート
+
+   枠外にはSTARTイベントを
+   一切設定しない
 ========================= */
 
-function canStartFromPoint(event){
-
-  if(
-    settings.classList.contains("open")
-  ){
-    return false;
-  }
-
-  if(
-    event.target.closest("#adjustPanel") ||
-    event.target.closest("#settingsButton")
-  ){
-    return false;
-  }
-
-  /*
-    iPhone下部のホーム操作領域
-
-    ここから上へスワイプしても
-    QuickQを再スタートさせない
-  */
-
-  if(
-    event.clientY >=
-    window.innerHeight - NO_START_BOTTOM
-  ){
-    return false;
-  }
-
-  return true;
-
-}
-
-
-/* =========================
-   最速 pointerdown
-========================= */
-
-document.addEventListener(
+startArea.addEventListener(
   "pointerdown",
   (event) => {
 
     if(
-      !canStartFromPoint(event)
+      settings.classList.contains(
+        "open"
+      )
     ){
       return;
     }
@@ -773,10 +1250,10 @@ document.addEventListener(
 
 
 /* =========================
-   古いiPhone用バックアップ
+   古いiPhone用
 ========================= */
 
-document.addEventListener(
+startArea.addEventListener(
   "touchstart",
   (event) => {
 
@@ -785,28 +1262,9 @@ document.addEventListener(
     }
 
     if(
-      settings.classList.contains("open")
-    ){
-      return;
-    }
-
-    if(
-      event.target.closest("#adjustPanel") ||
-      event.target.closest("#settingsButton")
-    ){
-      return;
-    }
-
-    const touch =
-      event.touches[0];
-
-    if(!touch){
-      return;
-    }
-
-    if(
-      touch.clientY >=
-      window.innerHeight - NO_START_BOTTOM
+      settings.classList.contains(
+        "open"
+      )
     ){
       return;
     }
@@ -827,60 +1285,47 @@ document.addEventListener(
 function updateCorrection(){
 
   const value =
-    Number(correction.value);
+    Number(
+      correction.value
+    );
 
   if(value > 0){
 
     correctionValue.textContent =
-      "+" + value.toFixed(1) + "秒";
+      "+"
+      +
+      value.toFixed(1)
+      +
+      "秒";
 
   }
   else{
 
     correctionValue.textContent =
-      value.toFixed(1) + "秒";
+      value.toFixed(1)
+      +
+      "秒";
 
   }
-
-  /*
-    動作中なら補正変更を
-    即座にタイマーへ反映
-  */
 
   if(running){
 
     timer.textContent =
-      formatTime(getElapsed());
+      formatTime(
+        getElapsed()
+      );
+
+    saveTimerState();
 
   }
 
 }
 
+
 correction.addEventListener(
   "input",
   updateCorrection
 );
-
-
-[
-  "pointerdown",
-  "touchstart",
-  "click"
-].forEach(type => {
-
-  adjustPanel.addEventListener(
-    type,
-    (event) => {
-
-      event.stopPropagation();
-
-    },
-    {
-      passive:true
-    }
-  );
-
-});
 
 
 /* =========================
@@ -896,32 +1341,41 @@ settingsButton.addEventListener(
   }
 );
 
+
 settingsButton.addEventListener(
   "click",
   (event) => {
 
     event.stopPropagation();
 
-    settings.classList.add("open");
+    settings.classList.add(
+      "open"
+    );
 
   }
 );
+
 
 closeSettings.addEventListener(
   "click",
   () => {
 
-    settings.classList.remove("open");
+    settings.classList.remove(
+      "open"
+    );
 
   }
 );
 
 
 /* =========================
-   設定保存
+   表示設定保存
 ========================= */
 
-function saveSetting(name,value){
+function saveSetting(
+  name,
+  value
+){
 
   try{
 
@@ -936,14 +1390,19 @@ function saveSetting(name,value){
 }
 
 
-function loadSetting(name,fallback){
+function loadSetting(
+  name,
+  fallback
+){
 
   try{
 
     return (
       localStorage.getItem(
         "quickq_" + name
-      ) || fallback
+      )
+      ||
+      fallback
     );
 
   }
@@ -965,34 +1424,53 @@ function applySize(value){
   value =
     Math.max(
       70,
-      Math.min(135,Number(value))
+      Math.min(
+        135,
+        Number(value)
+      )
     );
 
-  sizeSetting.value = value;
+  sizeSetting.value =
+    value;
 
   sizeValue.textContent =
     value + "%";
 
   const vw =
-    23 * (value / 100);
+    23 *
+    (value / 100);
 
   timer.style.fontSize =
-    "clamp(70px," +
-    vw +
+    "clamp(70px,"
+    +
+    vw
+    +
     "vw,230px)";
 
   preview.style.fontSize =
-    (58 * value / 100) + "px";
+    (
+      58 *
+      value /
+      100
+    )
+    +
+    "px";
 
-  saveSetting("size",value);
+  saveSetting(
+    "size",
+    value
+  );
 
 }
+
 
 sizeSetting.addEventListener(
   "input",
   () => {
 
-    applySize(sizeSetting.value);
+    applySize(
+      sizeSetting.value
+    );
 
   }
 );
@@ -1004,7 +1482,8 @@ sizeSetting.addEventListener(
 
 function weightName(value){
 
-  value = Number(value);
+  value =
+    Number(value);
 
   if(value <= 300){
     return "細い";
@@ -1028,20 +1507,31 @@ function applyWeight(value){
   value =
     Math.max(
       300,
-      Math.min(900,Number(value))
+      Math.min(
+        900,
+        Number(value)
+      )
     );
 
-  timer.style.fontWeight = value;
-  preview.style.fontWeight = value;
+  timer.style.fontWeight =
+    value;
 
-  weightSetting.value = value;
+  preview.style.fontWeight =
+    value;
+
+  weightSetting.value =
+    value;
 
   weightValue.textContent =
     weightName(value);
 
-  saveSetting("weight",value);
+  saveSetting(
+    "weight",
+    value
+  );
 
 }
+
 
 weightSetting.addEventListener(
   "input",
@@ -1064,38 +1554,52 @@ const fontButtons =
     ".fontButton"
   );
 
+
 function applyFont(font){
 
-  timer.style.fontFamily = font;
-  preview.style.fontFamily = font;
+  timer.style.fontFamily =
+    font;
 
-  fontButtons.forEach(button => {
+  preview.style.fontFamily =
+    font;
 
-    button.classList.toggle(
-      "selected",
-      button.dataset.font === font
-    );
+  fontButtons.forEach(
+    button => {
 
-  });
-
-  saveSetting("font",font);
-
-}
-
-fontButtons.forEach(button => {
-
-  button.addEventListener(
-    "click",
-    () => {
-
-      applyFont(
+      button.classList.toggle(
+        "selected",
         button.dataset.font
+        ===
+        font
       );
 
     }
   );
 
-});
+  saveSetting(
+    "font",
+    font
+  );
+
+}
+
+
+fontButtons.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        applyFont(
+          button.dataset.font
+        );
+
+      }
+    );
+
+  }
+);
 
 
 /* =========================
@@ -1107,51 +1611,68 @@ const colorButtons =
     ".colorButton"
   );
 
+
 function applyColor(color){
 
-  timer.style.color = color;
-  preview.style.color = color;
+  timer.style.color =
+    color;
 
-  colorButtons.forEach(button => {
+  preview.style.color =
+    color;
 
-    button.classList.toggle(
-      "selected",
-      button.dataset.color === color
-    );
+  colorButtons.forEach(
+    button => {
 
-  });
-
-  saveSetting("color",color);
-
-}
-
-colorButtons.forEach(button => {
-
-  button.addEventListener(
-    "click",
-    () => {
-
-      applyColor(
+      button.classList.toggle(
+        "selected",
         button.dataset.color
+        ===
+        color
       );
 
     }
   );
 
-});
+  saveSetting(
+    "color",
+    color
+  );
+
+}
+
+
+colorButtons.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        applyColor(
+          button.dataset.color
+        );
+
+      }
+    );
+
+  }
+);
 
 
 /* =========================
-   初期設定へ戻す
+   表示設定リセット
 ========================= */
 
 document
-.getElementById("resetSettings")
+.getElementById(
+  "resetSettings"
+)
 .addEventListener(
   "click",
   () => {
 
     applySize(100);
+
     applyWeight(700);
 
     applyFont(
@@ -1167,15 +1688,21 @@ document
 
 
 /* =========================
-   保存設定復元
+   表示設定復元
 ========================= */
 
 applySize(
-  loadSetting("size","100")
+  loadSetting(
+    "size",
+    "100"
+  )
 );
 
 applyWeight(
-  loadSetting("weight","700")
+  loadSetting(
+    "weight",
+    "700"
+  )
 );
 
 applyFont(
@@ -1192,21 +1719,40 @@ applyColor(
   )
 );
 
+
+/* =========================
+   タイマー状態復元
+========================= */
+
+const restored =
+  restoreTimerState();
+
 updateCorrection();
 
-timer.textContent =
-  "00:00.0";
+
+if(restored){
+
+  timer.textContent =
+    formatTime(
+      getElapsed()
+    );
+
+  animationId =
+    requestAnimationFrame(
+      draw
+    );
+
+}
+else{
+
+  timer.textContent =
+    "00:00.0";
+
+}
 
 
 /* =========================
-   他アプリから復帰
-
-   バックグラウンド中に
-   requestAnimationFrameが
-   停止していても問題なし。
-
-   Date.now()から正しい
-   経過時間を再計算する。
+   他アプリへ移動 / 復帰
 ========================= */
 
 document.addEventListener(
@@ -1214,20 +1760,35 @@ document.addEventListener(
   () => {
 
     if(
-      document.visibilityState === "visible"
+      document.visibilityState
+      ===
+      "visible"
     ){
+
+      /*
+        戻った瞬間に
+        Date.now()から再計算
+      */
 
       if(running){
 
         timer.textContent =
-          formatTime(getElapsed());
+          formatTime(
+            getElapsed()
+          );
 
         if(animationId){
-          cancelAnimationFrame(animationId);
+
+          cancelAnimationFrame(
+            animationId
+          );
+
         }
 
         animationId =
-          requestAnimationFrame(draw);
+          requestAnimationFrame(
+            draw
+          );
 
       }
 
@@ -1235,11 +1796,19 @@ document.addEventListener(
     else{
 
       /*
-        バックグラウンドでは
-        描画だけ停止。
+        他アプリへ移動する直前に
+        状態を保存
+      */
 
-        runningとstartRealTimeは
-        そのまま保持する。
+      if(running){
+
+        saveTimerState();
+
+      }
+
+      /*
+        描画だけ停止。
+        時計自体は止めない。
       */
 
       if(animationId){
@@ -1264,21 +1833,33 @@ document.addEventListener(
 
 let wakeLock = null;
 
+
 async function keepScreenAwake(){
 
-  if(!("wakeLock" in navigator)){
+  if(
+    !(
+      "wakeLock"
+      in
+      navigator
+    )
+  ){
     return;
   }
 
   try{
 
     if(
-      wakeLock === null &&
-      document.visibilityState === "visible"
+      wakeLock === null
+      &&
+      document.visibilityState
+      ===
+      "visible"
     ){
 
       wakeLock =
-        await navigator.wakeLock.request(
+        await navigator
+        .wakeLock
+        .request(
           "screen"
         );
 
@@ -1303,9 +1884,12 @@ async function keepScreenAwake(){
 }
 
 
-/* 最初の操作でスリープ防止 */
+/*
+  START枠を最初に触った時に
+  スリープ防止を有効化
+*/
 
-document.addEventListener(
+startArea.addEventListener(
   "pointerdown",
   keepScreenAwake,
   {
@@ -1315,14 +1899,19 @@ document.addEventListener(
 );
 
 
-/* 復帰時にWake Lockも再取得 */
+/*
+  他アプリから戻った時も
+  Wake Lock再取得
+*/
 
 document.addEventListener(
   "visibilitychange",
   () => {
 
     if(
-      document.visibilityState === "visible"
+      document.visibilityState
+      ===
+      "visible"
     ){
 
       keepScreenAwake();
