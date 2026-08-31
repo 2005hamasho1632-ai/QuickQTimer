@@ -27,606 +27,451 @@ html,body{
   margin:0;
   width:100%;
   height:100%;
+  overflow:hidden;
   background:#000;
   color:#fff;
-  overflow:hidden;
-  -webkit-user-select:none;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
   user-select:none;
+  -webkit-user-select:none;
   touch-action:manipulation;
-  font-family:-apple-system,BlinkMacSystemFont,
-  "Helvetica Neue",Arial,sans-serif;
 }
 
-#app{
+body{
   position:fixed;
   inset:0;
-  width:100%;
-  height:100dvh;
-  background:#000;
 }
 
+/* 全画面 */
 
-/* =========================
-   巨大タイマー
-========================= */
-
-#timerArea{
+#app{
   position:absolute;
-  left:0;
-  right:0;
-  top:10%;
-  height:58%;
-
+  inset:0;
   display:flex;
-  align-items:center;
+  flex-direction:column;
   justify-content:center;
-
-  pointer-events:none;
+  align-items:center;
+  padding:
+    env(safe-area-inset-top)
+    18px
+    calc(env(safe-area-inset-bottom) + 20px);
 }
+
+/* 現在時刻 */
+
+#clock{
+  position:absolute;
+  top:calc(env(safe-area-inset-top) + 12px);
+  right:22px;
+
+  font-size:18px;
+  font-weight:500;
+  letter-spacing:1px;
+
+  color:#777;
+}
+
+/* メインタイマー */
 
 #timer{
   width:100%;
   text-align:center;
 
-  color:#fff;
-
-  /*
-    iPhoneで可能な限り大きく表示
-  */
-  font-size:clamp(82px,25vw,190px);
-  font-weight:700;
-  line-height:1;
-
-  letter-spacing:-0.075em;
-
   font-variant-numeric:tabular-nums;
   font-feature-settings:"tnum";
 
+  font-size:clamp(74px,22vw,150px);
+  font-weight:300;
+  letter-spacing:-5px;
+  line-height:1;
+
   white-space:nowrap;
 
-  text-shadow:
-    0 0 2px rgba(255,255,255,.3);
+  transform:translateY(-4vh);
 }
 
+/* 初回だけ表示 */
 
-/* =========================
-   補正エリア
-========================= */
+#guide{
+  position:absolute;
+  top:67%;
+
+  font-size:15px;
+  font-weight:500;
+  letter-spacing:3px;
+
+  color:#555;
+
+  transition:opacity .15s ease;
+}
+
+#guide.hide{
+  opacity:0;
+}
+
+/* 補正 */
 
 #adjustPanel{
   position:absolute;
 
-  left:22px;
-  right:22px;
+  left:24px;
+  right:24px;
 
-  bottom:calc(env(safe-area-inset-bottom) + 24px);
+  bottom:calc(env(safe-area-inset-bottom) + 25px);
 
-  z-index:20;
+  padding:14px 16px 8px;
 
-  padding:12px 4px 4px;
+  border-radius:18px;
 
-  touch-action:none;
+  background:rgba(255,255,255,.045);
 }
 
-#adjustTop{
+.adjustTop{
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  justify-content:center;
 
-  margin-bottom:5px;
+  margin-bottom:8px;
+
+  font-size:13px;
+  color:#777;
 }
 
-#adjustValue{
-  color:#aaa;
-
-  font-size:24px;
-  font-weight:600;
-
+#correctionValue{
   font-variant-numeric:tabular-nums;
+  color:#aaa;
+  font-size:15px;
 }
 
+/* スライダー */
 
-/* =========================
-   スライダー
-========================= */
-
-#slider{
-  display:block;
-
+#correction{
   width:100%;
-  height:60px;
+  height:34px;
 
   margin:0;
 
-  appearance:none;
-  -webkit-appearance:none;
-
-  background:transparent;
-
-  touch-action:none;
+  accent-color:#fff;
 }
 
-#slider::-webkit-slider-runnable-track{
-  height:5px;
-
-  border-radius:999px;
-
-  background:#555;
-}
-
-#slider::-webkit-slider-thumb{
-  appearance:none;
-  -webkit-appearance:none;
-
-  width:42px;
-  height:42px;
-
-  margin-top:-18.5px;
-
-  border:0;
-  border-radius:50%;
-
-  background:#fff;
-
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.2);
-}
-
-#slider::-moz-range-track{
-  height:5px;
-  background:#555;
-}
-
-#slider::-moz-range-thumb{
-  width:42px;
-  height:42px;
-
-  border:0;
-  border-radius:50%;
-
-  background:#fff;
-}
-
-
-/* =========================
-   -20 / +20
-========================= */
-
-#scale{
-  display:flex;
-  justify-content:space-between;
-
-  margin-top:-5px;
-
-  color:#555;
-
-  font-size:13px;
-
-  pointer-events:none;
-}
-
-
-/* =========================
-   タップ表示
-========================= */
-
-#hint{
-  margin-top:18px;
-
-  text-align:center;
-
-  color:#555;
-
-  font-size:13px;
-  font-weight:500;
-
-  letter-spacing:.08em;
-
-  pointer-events:none;
-}
-
-
-/* =========================
-   タップした瞬間の反応
-========================= */
+/* タップした瞬間の視覚フィードバック */
 
 #flash{
-  position:absolute;
+  position:fixed;
   inset:0;
-
-  background:rgba(255,255,255,.10);
-
-  opacity:0;
 
   pointer-events:none;
 
-  z-index:100;
+  background:#fff;
+  opacity:0;
+
+  transition:opacity 80ms ease;
 }
 
-#flash.on{
-  animation:tapFlash .12s ease-out;
-}
-
-@keyframes tapFlash{
-
-  0%{
-    opacity:1;
-  }
-
-  100%{
-    opacity:0;
-  }
-
-}
-
-
-/* =========================
-   横画面
-========================= */
-
-@media (orientation:landscape){
-
-  #timerArea{
-    top:0;
-    height:72%;
-  }
-
-  #timer{
-    font-size:clamp(80px,20vw,210px);
-  }
-
-  #adjustPanel{
-    bottom:8px;
-  }
-
-  #hint{
-    margin-top:5px;
-  }
-
+#flash.active{
+  opacity:.075;
 }
 
 </style>
 </head>
 
-
 <body>
 
 <div id="app">
 
+  <div id="clock"></div>
 
-  <div id="timerArea">
+  <div id="timer">00:00.0</div>
 
-    <div id="timer">
-      00:00.0
-    </div>
-
-  </div>
-
+  <div id="guide">TAP TO START</div>
 
   <div id="adjustPanel">
 
-
-    <div id="adjustTop">
-
-      <div id="adjustValue">
-        0.0秒
-      </div>
-
+    <div class="adjustTop">
+      <span>補正</span>
+      <span id="correctionValue">±0.0 秒</span>
     </div>
 
-
     <input
-      id="slider"
+      id="correction"
       type="range"
       min="-20"
       max="20"
       step="0.1"
       value="0"
-      aria-label="時間補正"
     >
-
-
-    <div id="scale">
-
-      <span>-20秒</span>
-
-      <span>0</span>
-
-      <span>+20秒</span>
-
-    </div>
-
-
-    <div id="hint">
-      画面タップ → 0:00.0
-    </div>
-
 
   </div>
 
-
-  <div id="flash"></div>
-
-
 </div>
 
+<div id="flash"></div>
 
 <script>
 
 (() => {
 
-"use strict";
+  const timer =
+    document.getElementById("timer");
+
+  const clock =
+    document.getElementById("clock");
+
+  const guide =
+    document.getElementById("guide");
+
+  const correction =
+    document.getElementById("correction");
+
+  const correctionValue =
+    document.getElementById("correctionValue");
+
+  const adjustPanel =
+    document.getElementById("adjustPanel");
+
+  const flash =
+    document.getElementById("flash");
 
 
-const timer =
-  document.getElementById("timer");
+  let running = false;
 
-const slider =
-  document.getElementById("slider");
+  let startTime = 0;
 
-const adjustPanel =
-  document.getElementById("adjustPanel");
+  let correctionMs = 0;
 
-const adjustValue =
-  document.getElementById("adjustValue");
-
-const flash =
-  document.getElementById("flash");
+  let animationId = null;
 
 
-let running = false;
+  /* =========================
+     現在時刻
+  ========================= */
 
-let startTime = 0;
+  function updateClock(){
 
-let correctionMs = 0;
+    const now = new Date();
 
-let animationId = null;
+    const h =
+      String(now.getHours())
+      .padStart(2,"0");
 
+    const m =
+      String(now.getMinutes())
+      .padStart(2,"0");
 
-/* =========================
-   時間表示
-   00:00.0
-========================= */
+    const s =
+      String(now.getSeconds())
+      .padStart(2,"0");
 
-function formatTime(ms){
+    clock.textContent =
+      `${h}:${m}:${s}`;
 
-  const displayMs =
-    Math.max(0,ms);
-
-
-  const totalTenths =
-    Math.floor(displayMs / 100);
-
-
-  const minutes =
-    Math.floor(totalTenths / 600);
-
-
-  const seconds =
-    Math.floor(
-      (totalTenths % 600) / 10
-    );
-
-
-  const tenths =
-    totalTenths % 10;
-
-
-  return (
-    String(minutes).padStart(2,"0")
-    +
-    ":"
-    +
-    String(seconds).padStart(2,"0")
-    +
-    "."
-    +
-    tenths
-  );
-
-}
-
-
-/* =========================
-   経過時間
-========================= */
-
-function getElapsed(now){
-
-  return (
-    now
-    -
-    startTime
-    +
-    correctionMs
-  );
-
-}
-
-
-/* =========================
-   タイマー描画
-========================= */
-
-function render(now){
-
-  if(!running){
-    return;
   }
 
+  updateClock();
 
-  timer.textContent =
-    formatTime(
-      getElapsed(now)
+  setInterval(updateClock,250);
+
+
+  /* =========================
+     時間表示
+  ========================= */
+
+  function formatTime(ms){
+
+    ms = Math.max(0,ms);
+
+    const totalTenths =
+      Math.floor(ms / 100);
+
+    const minutes =
+      Math.floor(totalTenths / 600);
+
+    const seconds =
+      Math.floor(
+        (totalTenths % 600) / 10
+      );
+
+    const tenth =
+      totalTenths % 10;
+
+    return (
+      String(minutes).padStart(2,"0")
+      + ":"
+      + String(seconds).padStart(2,"0")
+      + "."
+      + tenth
     );
-
-
-  animationId =
-    requestAnimationFrame(render);
-
-}
-
-
-/* =========================
-   スタート / 再スタート
-========================= */
-
-function startTimer(){
-
-  if(animationId !== null){
-
-    cancelAnimationFrame(animationId);
-
-    animationId = null;
 
   }
 
 
-  startTime =
-    performance.now();
+  /* =========================
+     タイマー更新
+  ========================= */
 
+  function draw(now){
 
-  running = true;
-
-
-  /*
-    タップした瞬間は必ず0表示
-  */
-
-  timer.textContent =
-    "00:00.0";
-
-
-  flash.classList.remove("on");
-
-  void flash.offsetWidth;
-
-  flash.classList.add("on");
-
-
-  animationId =
-    requestAnimationFrame(render);
-
-}
-
-
-/* =========================
-   画面どこでもスタート
-   補正エリアだけ除外
-========================= */
-
-document.addEventListener(
-  "pointerdown",
-  (event) => {
-
-    if(
-      event.target.closest("#adjustPanel")
-    ){
+    if(!running){
       return;
     }
 
-
-    startTimer();
-
-  },
-  {
-    passive:true
-  }
-);
-
-
-/* =========================
-   補正
-========================= */
-
-function updateCorrection(){
-
-  const seconds =
-    Number(slider.value);
-
-
-  correctionMs =
-    seconds * 1000;
-
-
-  if(seconds > 0){
-
-    adjustValue.textContent =
-      "+"
-      +
-      seconds.toFixed(1)
-      +
-      "秒";
-
-  }
-  else{
-
-    adjustValue.textContent =
-      seconds.toFixed(1)
-      +
-      "秒";
-
-  }
-
-
-  /*
-    動作中なら即時反映
-  */
-
-  if(running){
+    const elapsed =
+      now - startTime + correctionMs;
 
     timer.textContent =
-      formatTime(
-        getElapsed(
-          performance.now()
-        )
-      );
+      formatTime(elapsed);
+
+    animationId =
+      requestAnimationFrame(draw);
 
   }
 
-}
+
+  /* =========================
+     スタート / 再スタート
+  ========================= */
+
+  function restart(){
+
+    startTime =
+      performance.now();
+
+    running = true;
+
+    timer.textContent =
+      formatTime(correctionMs);
+
+    guide.classList.add("hide");
+
+    if(animationId){
+      cancelAnimationFrame(animationId);
+    }
+
+    animationId =
+      requestAnimationFrame(draw);
 
 
-slider.addEventListener(
-  "input",
-  updateCorrection
-);
+    /* タップ確認 */
 
+    flash.classList.add("active");
 
-/* =========================
-   スライダー操作で
-   タイマーを再スタートさせない
-========================= */
-
-adjustPanel.addEventListener(
-  "pointerdown",
-  (event) => {
-
-    event.stopPropagation();
+    setTimeout(() => {
+      flash.classList.remove("active");
+    },70);
 
   }
-);
 
 
-adjustPanel.addEventListener(
-  "click",
-  (event) => {
+  /* =========================
+     補正
+  ========================= */
 
-    event.stopPropagation();
+  function updateCorrection(){
+
+    const value =
+      Number(correction.value);
+
+    correctionMs =
+      value * 1000;
+
+    if(value > 0){
+
+      correctionValue.textContent =
+        "+" + value.toFixed(1) + " 秒";
+
+    }
+    else if(value < 0){
+
+      correctionValue.textContent =
+        value.toFixed(1) + " 秒";
+
+    }
+    else{
+
+      correctionValue.textContent =
+        "±0.0 秒";
+
+    }
+
+
+    if(!running){
+
+      timer.textContent =
+        formatTime(
+          Math.max(0,correctionMs)
+        );
+
+    }
 
   }
-);
 
 
-/* =========================
-   初期化
-========================= */
+  correction.addEventListener(
+    "input",
+    updateCorrection
+  );
 
-updateCorrection();
 
-timer.textContent =
-  "00:00.0";
+  /* =========================
+     補正部分では
+     タイマーを再スタートさせない
+  ========================= */
 
+  adjustPanel.addEventListener(
+    "pointerdown",
+    (event) => {
+
+      event.stopPropagation();
+
+    }
+  );
+
+  adjustPanel.addEventListener(
+    "click",
+    (event) => {
+
+      event.stopPropagation();
+
+    }
+  );
+
+
+  /* =========================
+     画面のどこを押しても
+     即座に 0 から再スタート
+  ========================= */
+
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+
+      if(
+        event.target.closest("#adjustPanel")
+      ){
+        return;
+      }
+
+      restart();
+
+    },
+    {passive:true}
+  );
+
+
+  /* =========================
+     初期化
+  ========================= */
+
+  updateCorrection();
+
+  timer.textContent =
+    "00:00.0";
 
 })();
 
