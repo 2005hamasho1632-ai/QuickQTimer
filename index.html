@@ -2,351 +2,732 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#000000">
 
-<title>QuickQTimer</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+>
+
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="QuickQ">
+
+<title>QuickQ Timer</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  background:#000;
-  color:#fff;
-  overflow:hidden;
-  font-family:-apple-system,BlinkMacSystemFont,
-               "SF Pro Display","Helvetica Neue",Arial,sans-serif;
-  touch-action:manipulation;
-  user-select:none;
-  -webkit-user-select:none;
-}
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "SF Pro Display",
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+  }
 
-body{
-  min-height:100dvh;
-}
+  body {
+    min-height: 100dvh;
+  }
 
-/* 全画面スタートエリア */
-#startArea{
-  position:fixed;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
+  /* =========================
+     画面全体
+  ========================= */
 
-/* 現在時刻 */
-#clock{
-  position:absolute;
-  top:max(22px,env(safe-area-inset-top));
-  right:28px;
+  #app {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    background: #000;
+  }
 
-  font-size:clamp(18px,4vw,28px);
-  font-weight:400;
-  letter-spacing:.06em;
-  color:#777;
-  font-variant-numeric:tabular-nums;
-}
+  /*
+    この透明レイヤーが
+    画面のほぼ全面をスタートボタンにする
+  */
+  #startArea {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    cursor: pointer;
+  }
 
-/* メインタイマー */
-#timer{
-  width:100%;
-  text-align:center;
+  /* =========================
+     上部
+  ========================= */
 
-  font-size:clamp(86px,24vw,190px);
-  line-height:.9;
+  #top {
+    position: absolute;
+    z-index: 2;
 
-  font-weight:300;
-  letter-spacing:-.075em;
+    top: calc(env(safe-area-inset-top) + 24px);
+    left: 28px;
+    right: 28px;
 
-  color:#fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-  font-variant-numeric:tabular-nums;
-  font-feature-settings:"tnum";
+    pointer-events: none;
+  }
 
-  transform:translateY(-5vh);
-}
+  #name {
+    font-size: clamp(13px, 3.4vw, 17px);
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: #666;
+  }
 
-/* タップ案内 */
-#hint{
-  position:absolute;
-  bottom:185px;
-  width:100%;
-  text-align:center;
+  #clock {
+    font-size: clamp(15px, 4vw, 19px);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    color: #777;
+  }
 
-  font-size:clamp(13px,3.3vw,20px);
-  font-weight:500;
-  letter-spacing:.25em;
-  color:#444;
+  /* =========================
+     メインタイマー
+  ========================= */
 
-  transition:.2s;
-}
+  #timerWrap {
+    position: absolute;
+    z-index: 2;
 
-/* 動作中 */
-.running #hint{
-  opacity:0;
-}
+    left: 0;
+    right: 0;
 
-/* 補正部分 */
-#adjustPanel{
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:max(30px,env(safe-area-inset-bottom));
+    top: 42%;
+    transform: translateY(-50%);
 
-  padding:0 34px;
-  z-index:20;
-}
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-#adjustRow{
-  display:flex;
-  align-items:center;
-  gap:18px;
-}
+    pointer-events: none;
+  }
 
-.adjustLabel{
-  font-size:16px;
-  color:#555;
-  white-space:nowrap;
-}
+  #timer {
+    width: 100%;
+    text-align: center;
 
-#adjustValue{
-  width:65px;
-  text-align:right;
-  font-size:17px;
-  color:#888;
-  font-variant-numeric:tabular-nums;
-}
+    font-size: clamp(86px, 23vw, 190px);
+    line-height: 0.88;
 
-#slider{
-  flex:1;
-  appearance:none;
-  -webkit-appearance:none;
-  height:38px;
-  background:transparent;
-}
+    font-weight: 700;
+    letter-spacing: -0.075em;
 
-#slider::-webkit-slider-runnable-track{
-  height:4px;
-  border-radius:10px;
-  background:#555;
-}
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
 
-#slider::-webkit-slider-thumb{
-  appearance:none;
-  -webkit-appearance:none;
+    white-space: nowrap;
+    color: #fff;
+  }
 
-  width:32px;
-  height:32px;
-  margin-top:-14px;
+  #status {
+    margin-top: 34px;
 
-  border-radius:50%;
-  border:none;
-  background:#fff;
-}
+    font-size: clamp(12px, 3.5vw, 17px);
+    font-weight: 600;
+    letter-spacing: 0.32em;
 
-/* スタートした瞬間の軽い反応 */
-.flash{
-  animation:flash .18s ease-out;
-}
+    color: #555;
 
-@keyframes flash{
-  0%{opacity:.35;}
-  100%{opacity:1;}
-}
+    transition:
+      color 0.12s ease,
+      opacity 0.12s ease,
+      transform 0.12s ease;
+  }
+
+  #status.running {
+    color: #fff;
+  }
+
+  /*
+    タップした瞬間だけ表示する
+    視覚的フィードバック
+  */
+  #flash {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+
+    background: rgba(255,255,255,0.10);
+
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #flash.on {
+    animation: tapFlash 0.16s ease-out;
+  }
+
+  @keyframes tapFlash {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* =========================
+     下部
+  ========================= */
+
+  #bottom {
+    position: absolute;
+    z-index: 10;
+
+    left: 28px;
+    right: 28px;
+
+    bottom: calc(env(safe-area-inset-bottom) + 30px);
+  }
+
+  #hint {
+    margin-bottom: 28px;
+
+    text-align: center;
+
+    font-size: clamp(13px, 3.6vw, 18px);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+
+    color: #666;
+
+    pointer-events: none;
+  }
+
+  #hint strong {
+    color: #aaa;
+    font-weight: 600;
+  }
+
+  /* =========================
+     補正
+  ========================= */
+
+  #adjustPanel {
+    position: relative;
+    z-index: 20;
+
+    padding: 18px 0 8px;
+
+    background: #000;
+
+    touch-action: none;
+  }
+
+  #adjustLabels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    font-size: 14px;
+    color: #666;
+  }
+
+  #adjustValue {
+    min-width: 76px;
+    text-align: right;
+
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+
+    color: #999;
+  }
+
+  #slider {
+    width: 100%;
+    height: 42px;
+
+    margin: 0;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    background: transparent;
+
+    touch-action: none;
+  }
+
+  #slider::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 999px;
+    background: #555;
+  }
+
+  #slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 34px;
+    height: 34px;
+
+    margin-top: -15px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #fff;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+  }
+
+  #slider::-moz-range-track {
+    height: 4px;
+    border-radius: 999px;
+    background: #555;
+  }
+
+  #slider::-moz-range-thumb {
+    width: 34px;
+    height: 34px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #fff;
+  }
+
+  /* 小さいiPhone対策 */
+
+  @media (max-height: 700px) {
+
+    #timerWrap {
+      top: 39%;
+    }
+
+    #status {
+      margin-top: 24px;
+    }
+
+    #bottom {
+      bottom: calc(env(safe-area-inset-bottom) + 12px);
+    }
+
+    #hint {
+      margin-bottom: 12px;
+    }
+
+    #adjustPanel {
+      padding-top: 8px;
+    }
+  }
 
 </style>
 </head>
 
+
 <body>
 
-<div id="startArea">
+<div id="app">
 
-  <div id="clock">--:--:--</div>
+  <!--
+    透明な巨大スタート領域
+  -->
+  <div id="startArea"></div>
 
-  <div id="timer">0:00.0</div>
 
-  <div id="hint">
-    TAP ANYWHERE TO START
+  <!-- 上部 -->
+  <div id="top">
+    <div id="name">QUICK Q</div>
+    <div id="clock">--:--:--</div>
   </div>
 
-</div>
+
+  <!-- メイン -->
+  <main id="timerWrap">
+
+    <div id="timer">
+      00:00.0
+    </div>
+
+    <div id="status">
+      TAP TO START
+    </div>
+
+  </main>
 
 
-<div id="adjustPanel">
+  <!-- 下部 -->
+  <div id="bottom">
 
-  <div id="adjustRow">
+    <div id="hint">
+      <strong>画面をタップ</strong> → 0:00.0
+    </div>
 
-    <span class="adjustLabel">補正</span>
 
-    <input
-      id="slider"
-      type="range"
-      min="-20"
-      max="20"
-      step="0.1"
-      value="0"
-    >
+    <div id="adjustPanel">
 
-    <span id="adjustValue">0.0秒</span>
+      <div id="adjustLabels">
+        <span>補正</span>
+        <span id="adjustValue">0.0秒</span>
+      </div>
+
+      <input
+        id="slider"
+        type="range"
+        min="-20"
+        max="20"
+        step="0.1"
+        value="0"
+        aria-label="時間補正"
+      >
+
+    </div>
 
   </div>
+
+
+  <div id="flash"></div>
 
 </div>
 
 
 <script>
+(() => {
 
-const startArea = document.getElementById("startArea");
-const timer = document.getElementById("timer");
-const clock = document.getElementById("clock");
-
-const slider = document.getElementById("slider");
-const adjustValue = document.getElementById("adjustValue");
-
-let running = false;
-let startTime = 0;
-let adjustment = 0;
+  "use strict";
 
 
-/* ------------------------
-   時間表示
-------------------------- */
+  /* =========================
+     要素
+  ========================= */
 
-function formatTime(ms){
+  const timer =
+    document.getElementById("timer");
 
-  if(ms < 0) ms = 0;
+  const status =
+    document.getElementById("status");
 
-  const totalTenths = Math.floor(ms / 100);
+  const clock =
+    document.getElementById("clock");
 
-  const minutes =
-    Math.floor(totalTenths / 600);
+  const slider =
+    document.getElementById("slider");
 
-  const seconds =
-    Math.floor((totalTenths % 600) / 10);
+  const adjustPanel =
+    document.getElementById("adjustPanel");
 
-  const tenth =
-    totalTenths % 10;
+  const adjustValue =
+    document.getElementById("adjustValue");
 
-  return (
-    minutes +
-    ":" +
-    String(seconds).padStart(2,"0") +
-    "." +
-    tenth
+  const flash =
+    document.getElementById("flash");
+
+
+  /* =========================
+     状態
+  ========================= */
+
+  let running = false;
+
+  let startTime = 0;
+
+  let correction = 0;
+
+  let animationId = null;
+
+
+  /* =========================
+     時間表示
+  ========================= */
+
+  function formatTime(ms) {
+
+    /*
+      マイナス表示はさせない
+    */
+    ms = Math.max(0, ms);
+
+    /*
+      0.1秒単位
+    */
+    const totalTenths =
+      Math.floor(ms / 100);
+
+    const minutes =
+      Math.floor(totalTenths / 600);
+
+    const seconds =
+      Math.floor(
+        (totalTenths % 600) / 10
+      );
+
+    const tenths =
+      totalTenths % 10;
+
+
+    return (
+      String(minutes).padStart(2, "0")
+      + ":"
+      + String(seconds).padStart(2, "0")
+      + "."
+      + tenths
+    );
+  }
+
+
+  /* =========================
+     タイマー更新
+  ========================= */
+
+  function updateTimer(now) {
+
+    if (!running) {
+      return;
+    }
+
+    const elapsed =
+      now - startTime + correction;
+
+    timer.textContent =
+      formatTime(elapsed);
+
+    animationId =
+      requestAnimationFrame(updateTimer);
+  }
+
+
+  /* =========================
+     スタート / 再スタート
+  ========================= */
+
+  function startTimer() {
+
+    /*
+      すでに動いていても
+      必ず0から再スタート
+    */
+    if (animationId) {
+
+      cancelAnimationFrame(
+        animationId
+      );
+
+      animationId = null;
+    }
+
+
+    /*
+      補正値を考慮して
+      表示上0.0から始める
+    */
+    startTime =
+      performance.now() + correction;
+
+
+    running = true;
+
+
+    timer.textContent =
+      "00:00.0";
+
+
+    status.textContent =
+      "RUNNING";
+
+    status.classList.add(
+      "running"
+    );
+
+
+    /*
+      タップ成功を
+      画面の一瞬の点滅で知らせる
+    */
+    flash.classList.remove("on");
+
+    void flash.offsetWidth;
+
+    flash.classList.add("on");
+
+
+    /*
+      iPhoneが対応していれば
+      ごく短い振動
+    */
+    if ("vibrate" in navigator) {
+
+      try {
+        navigator.vibrate(15);
+      }
+      catch(e) {}
+    }
+
+
+    animationId =
+      requestAnimationFrame(
+        updateTimer
+      );
+  }
+
+
+  /* =========================
+     画面タップ
+  ========================= */
+
+  document.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      /*
+        補正スライダー周辺だけは
+        スタートさせない
+      */
+      if (
+        event.target.closest(
+          "#adjustPanel"
+        )
+      ) {
+        return;
+      }
+
+
+      /*
+        それ以外は
+        どこを押してもスタート
+      */
+      startTimer();
+
+    },
+    {
+      passive: true
+    }
   );
-}
 
 
-/* ------------------------
-   タイマー更新
-------------------------- */
+  /* =========================
+     補正
+  ========================= */
 
-function updateTimer(){
+  function updateCorrection() {
 
-  if(!running) return;
+    const seconds =
+      parseFloat(slider.value) || 0;
 
-  const elapsed =
-    performance.now() -
-    startTime +
-    adjustment * 1000;
+
+    correction =
+      seconds * 1000;
+
+
+    const sign =
+      seconds > 0 ? "+" : "";
+
+
+    adjustValue.textContent =
+      sign
+      + seconds.toFixed(1)
+      + "秒";
+  }
+
+
+  slider.addEventListener(
+    "input",
+    updateCorrection
+  );
+
+
+  /*
+    スライダー操作が
+    画面スタートへ伝わるのを防止
+  */
+
+  [
+    "pointerdown",
+    "pointerup",
+    "click",
+    "touchstart",
+    "touchend"
+  ].forEach(type => {
+
+    adjustPanel.addEventListener(
+      type,
+      function(event) {
+
+        event.stopPropagation();
+
+      },
+      {
+        passive: true
+      }
+    );
+
+  });
+
+
+  /* =========================
+     現在時刻
+  ========================= */
+
+  function updateClock() {
+
+    const now =
+      new Date();
+
+
+    const h =
+      String(
+        now.getHours()
+      ).padStart(2, "0");
+
+
+    const m =
+      String(
+        now.getMinutes()
+      ).padStart(2, "0");
+
+
+    const s =
+      String(
+        now.getSeconds()
+      ).padStart(2, "0");
+
+
+    clock.textContent =
+      h + ":" + m + ":" + s;
+  }
+
+
+  updateClock();
+
+  setInterval(
+    updateClock,
+    250
+  );
+
+
+  /* =========================
+     初期化
+  ========================= */
+
+  updateCorrection();
 
   timer.textContent =
-    formatTime(elapsed);
+    "00:00.0";
 
-  requestAnimationFrame(updateTimer);
-}
-
-
-/* ------------------------
-   どこを押しても
-   0:00.0からスタート
-------------------------- */
-
-function restart(){
-
-  startTime = performance.now();
-
-  running = true;
-
-  document.body.classList.add("running");
-
-  timer.textContent =
-    formatTime(adjustment * 1000);
-
-  timer.classList.remove("flash");
-
-  void timer.offsetWidth;
-
-  timer.classList.add("flash");
-
-  requestAnimationFrame(updateTimer);
-}
-
-
-startArea.addEventListener(
-  "pointerdown",
-  restart
-);
-
-
-/* ------------------------
-   補正スライダー
-------------------------- */
-
-slider.addEventListener("pointerdown",e=>{
-  e.stopPropagation();
-});
-
-slider.addEventListener("click",e=>{
-  e.stopPropagation();
-});
-
-slider.addEventListener("input",e=>{
-
-  e.stopPropagation();
-
-  adjustment =
-    parseFloat(slider.value);
-
-  adjustValue.textContent =
-    (adjustment > 0 ? "+" : "") +
-    adjustment.toFixed(1) +
-    "秒";
-});
-
-
-/* ------------------------
-   現在時刻
-------------------------- */
-
-function updateClock(){
-
-  const d = new Date();
-
-  clock.textContent =
-    String(d.getHours()).padStart(2,"0") +
-    ":" +
-    String(d.getMinutes()).padStart(2,"0") +
-    ":" +
-    String(d.getSeconds()).padStart(2,"0");
-}
-
-updateClock();
-
-setInterval(
-  updateClock,
-  250
-);
-
+})();
 </script>
 
 </body>
