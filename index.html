@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#000000">
 
 <title>QuickQTimer</title>
@@ -20,319 +20,333 @@ html,body{
   height:100%;
   background:#000;
   color:#fff;
-  font-family:-apple-system,BlinkMacSystemFont,
-              "Helvetica Neue",Arial,sans-serif;
   overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,
+               "SF Pro Display","Helvetica Neue",Arial,sans-serif;
   touch-action:manipulation;
+  user-select:none;
+  -webkit-user-select:none;
 }
 
 body{
   min-height:100dvh;
 }
 
-#app{
-  min-height:100dvh;
-  padding:
-    max(16px,env(safe-area-inset-top))
-    18px
-    max(18px,env(safe-area-inset-bottom));
+/* 全画面スタートエリア */
+#startArea{
+  position:fixed;
+  inset:0;
   display:flex;
   flex-direction:column;
-}
-
-/* 上部 */
-.top{
-  display:flex;
   align-items:center;
-  justify-content:space-between;
-  min-height:34px;
-  color:#888;
-  font-size:14px;
-  letter-spacing:.04em;
+  justify-content:center;
+  cursor:pointer;
 }
 
-.name{
-  font-weight:600;
-}
+/* 現在時刻 */
+#clock{
+  position:absolute;
+  top:max(22px,env(safe-area-inset-top));
+  right:28px;
 
-.clock{
+  font-size:clamp(18px,4vw,28px);
+  font-weight:400;
+  letter-spacing:.06em;
+  color:#777;
   font-variant-numeric:tabular-nums;
 }
 
 /* メインタイマー */
-.timerArea{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  min-height:0;
-}
-
 #timer{
   width:100%;
   text-align:center;
-  font-size:clamp(72px,22vw,150px);
+
+  font-size:clamp(86px,24vw,190px);
   line-height:.9;
-  font-weight:700;
-  letter-spacing:-.07em;
-  font-variant-numeric:tabular-nums;
-  white-space:nowrap;
-}
 
-/* 動作中の小さな表示 */
-#status{
-  height:28px;
-  margin-top:24px;
-  font-size:15px;
-  letter-spacing:.18em;
-  color:#666;
-}
+  font-weight:300;
+  letter-spacing:-.075em;
 
-#status.running{
   color:#fff;
+
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum";
+
+  transform:translateY(-5vh);
 }
 
-/* 下部操作 */
-.controls{
+/* タップ案内 */
+#hint{
+  position:absolute;
+  bottom:185px;
   width:100%;
+  text-align:center;
+
+  font-size:clamp(13px,3.3vw,20px);
+  font-weight:500;
+  letter-spacing:.25em;
+  color:#444;
+
+  transition:.2s;
 }
 
-.adjustRow{
+/* 動作中 */
+.running #hint{
+  opacity:0;
+}
+
+/* 補正部分 */
+#adjustPanel{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:max(30px,env(safe-area-inset-bottom));
+
+  padding:0 34px;
+  z-index:20;
+}
+
+#adjustRow{
   display:flex;
   align-items:center;
-  gap:12px;
-  margin-bottom:22px;
+  gap:18px;
 }
 
 .adjustLabel{
-  color:#777;
-  font-size:13px;
+  font-size:16px;
+  color:#555;
   white-space:nowrap;
 }
 
-#offsetText{
-  color:#aaa;
-  font-size:13px;
-  min-width:54px;
+#adjustValue{
+  width:65px;
   text-align:right;
+  font-size:17px;
+  color:#888;
   font-variant-numeric:tabular-nums;
 }
 
-input[type=range]{
+#slider{
   flex:1;
-  height:28px;
+  appearance:none;
+  -webkit-appearance:none;
+  height:38px;
   background:transparent;
-  appearance:none;
-  -webkit-appearance:none;
 }
 
-input[type=range]::-webkit-slider-runnable-track{
-  height:3px;
-  border-radius:3px;
-  background:#444;
+#slider::-webkit-slider-runnable-track{
+  height:4px;
+  border-radius:10px;
+  background:#555;
 }
 
-input[type=range]::-webkit-slider-thumb{
+#slider::-webkit-slider-thumb{
   appearance:none;
   -webkit-appearance:none;
-  width:22px;
-  height:22px;
-  margin-top:-9.5px;
+
+  width:32px;
+  height:32px;
+  margin-top:-14px;
+
   border-radius:50%;
+  border:none;
   background:#fff;
 }
 
-.startZone{
-  width:100%;
-  height:105px;
-  border:1px solid #444;
-  border-radius:22px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:#fff;
-  font-size:20px;
-  font-weight:600;
-  letter-spacing:.05em;
-  user-select:none;
-  -webkit-user-select:none;
+/* スタートした瞬間の軽い反応 */
+.flash{
+  animation:flash .18s ease-out;
 }
 
-.startZone:active{
-  background:#151515;
+@keyframes flash{
+  0%{opacity:.35;}
+  100%{opacity:1;}
 }
 
-.startSmall{
-  display:block;
-  margin-top:7px;
-  text-align:center;
-  color:#666;
-  font-size:11px;
-  font-weight:400;
-  letter-spacing:.12em;
-}
-
-/* 横画面 */
-@media (orientation:landscape){
-  #app{
-    padding:12px 28px;
-  }
-
-  .top{
-    min-height:24px;
-  }
-
-  #timer{
-    font-size:min(22vh,18vw);
-  }
-
-  #status{
-    margin-top:12px;
-  }
-
-  .adjustRow{
-    margin-bottom:10px;
-  }
-
-  .startZone{
-    height:62px;
-  }
-}
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div id="startArea">
 
-  <div class="top">
-    <div class="name">QUICK Q TIMER</div>
-    <div id="clock" class="clock">--:--:--</div>
+  <div id="clock">--:--:--</div>
+
+  <div id="timer">0:00.0</div>
+
+  <div id="hint">
+    TAP ANYWHERE TO START
   </div>
 
-  <div class="timerArea">
-    <div id="timer">00:00.0</div>
-    <div id="status">READY</div>
-  </div>
+</div>
 
-  <div class="controls">
 
-    <div class="adjustRow">
-      <div class="adjustLabel">補正</div>
+<div id="adjustPanel">
 
-      <input
-        id="offset"
-        type="range"
-        min="-300"
-        max="300"
-        value="0"
-        step="1">
+  <div id="adjustRow">
 
-      <div id="offsetText">0.0秒</div>
-    </div>
+    <span class="adjustLabel">補正</span>
 
-    <div id="startZone" class="startZone">
-      <div>
-        TAP → 0:00 START
-        <span class="startSmall">タップするたび 0:00 から再スタート</span>
-      </div>
-    </div>
+    <input
+      id="slider"
+      type="range"
+      min="-20"
+      max="20"
+      step="0.1"
+      value="0"
+    >
+
+    <span id="adjustValue">0.0秒</span>
 
   </div>
 
 </div>
 
+
 <script>
-const timerEl   = document.getElementById("timer");
-const clockEl   = document.getElementById("clock");
-const statusEl  = document.getElementById("status");
-const startZone = document.getElementById("startZone");
-const offset    = document.getElementById("offset");
-const offsetTxt = document.getElementById("offsetText");
+
+const startArea = document.getElementById("startArea");
+const timer = document.getElementById("timer");
+const clock = document.getElementById("clock");
+
+const slider = document.getElementById("slider");
+const adjustValue = document.getElementById("adjustValue");
 
 let running = false;
 let startTime = 0;
-let offsetMs = 0;
+let adjustment = 0;
 
-/* 現在時刻 */
-function updateClock(){
-  const d = new Date();
 
-  const h = String(d.getHours()).padStart(2,"0");
-  const m = String(d.getMinutes()).padStart(2,"0");
-  const s = String(d.getSeconds()).padStart(2,"0");
+/* ------------------------
+   時間表示
+------------------------- */
 
-  clockEl.textContent = `${h}:${m}:${s}`;
+function formatTime(ms){
+
+  if(ms < 0) ms = 0;
+
+  const totalTenths = Math.floor(ms / 100);
+
+  const minutes =
+    Math.floor(totalTenths / 600);
+
+  const seconds =
+    Math.floor((totalTenths % 600) / 10);
+
+  const tenth =
+    totalTenths % 10;
+
+  return (
+    minutes +
+    ":" +
+    String(seconds).padStart(2,"0") +
+    "." +
+    tenth
+  );
 }
 
-setInterval(updateClock,250);
-updateClock();
 
-/* 補正 */
-offset.addEventListener("input",()=>{
-  offsetMs = Number(offset.value) * 10;
+/* ------------------------
+   タイマー更新
+------------------------- */
 
-  const sec = offsetMs / 1000;
+function updateTimer(){
 
-  offsetTxt.textContent =
-    (sec > 0 ? "+" : "") + sec.toFixed(1) + "秒";
-});
+  if(!running) return;
 
-/* 0からスタート／再スタート */
-function startFromZero(){
+  const elapsed =
+    performance.now() -
+    startTime +
+    adjustment * 1000;
+
+  timer.textContent =
+    formatTime(elapsed);
+
+  requestAnimationFrame(updateTimer);
+}
+
+
+/* ------------------------
+   どこを押しても
+   0:00.0からスタート
+------------------------- */
+
+function restart(){
 
   startTime = performance.now();
+
   running = true;
 
-  statusEl.textContent = "RUNNING";
-  statusEl.classList.add("running");
+  document.body.classList.add("running");
 
-  if(navigator.vibrate){
-    navigator.vibrate(20);
-  }
+  timer.textContent =
+    formatTime(adjustment * 1000);
+
+  timer.classList.remove("flash");
+
+  void timer.offsetWidth;
+
+  timer.classList.add("flash");
+
+  requestAnimationFrame(updateTimer);
 }
 
-startZone.addEventListener("click",startFromZero);
 
-/* タイマー描画 */
-function render(){
+startArea.addEventListener(
+  "pointerdown",
+  restart
+);
 
-  if(running){
 
-    let elapsed =
-      performance.now() -
-      startTime +
-      offsetMs;
+/* ------------------------
+   補正スライダー
+------------------------- */
 
-    if(elapsed < 0){
-      elapsed = 0;
-    }
+slider.addEventListener("pointerdown",e=>{
+  e.stopPropagation();
+});
 
-    const totalTenths =
-      Math.floor(elapsed / 100);
+slider.addEventListener("click",e=>{
+  e.stopPropagation();
+});
 
-    const minutes =
-      Math.floor(totalTenths / 600);
+slider.addEventListener("input",e=>{
 
-    const seconds =
-      Math.floor((totalTenths % 600) / 10);
+  e.stopPropagation();
 
-    const tenth =
-      totalTenths % 10;
+  adjustment =
+    parseFloat(slider.value);
 
-    timerEl.textContent =
-      String(minutes).padStart(2,"0") +
-      ":" +
-      String(seconds).padStart(2,"0") +
-      "." +
-      tenth;
-  }
+  adjustValue.textContent =
+    (adjustment > 0 ? "+" : "") +
+    adjustment.toFixed(1) +
+    "秒";
+});
 
-  requestAnimationFrame(render);
+
+/* ------------------------
+   現在時刻
+------------------------- */
+
+function updateClock(){
+
+  const d = new Date();
+
+  clock.textContent =
+    String(d.getHours()).padStart(2,"0") +
+    ":" +
+    String(d.getMinutes()).padStart(2,"0") +
+    ":" +
+    String(d.getSeconds()).padStart(2,"0");
 }
 
-render();
+updateClock();
+
+setInterval(
+  updateClock,
+  250
+);
+
 </script>
 
 </body>
