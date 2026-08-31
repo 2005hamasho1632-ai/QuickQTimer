@@ -1,38 +1,169 @@
-const CACHE_NAME = "quickq-timer-v1";
+const CACHE_NAME = "quickq-timer-v2";
 
-const FILES_TO_CACHE = [
+const APP_SHELL = [
   "./",
   "./index.html"
 ];
 
+
+/* =========================
+   インストール
+   QuickQ本体をiPhoneに保存
+========================= */
+
 self.addEventListener("install", (event) => {
+
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(FILES_TO_CACHE);
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        return cache.addAll(APP_SHELL);
+      })
   );
+
   self.skipWaiting();
+
 });
+
+
+/* =========================
+   新しいバージョンを有効化
+   古いキャッシュを削除
+========================= */
 
 self.addEventListener("activate", (event) => {
+
   event.waitUntil(
-    caches.keys().then((names) => {
-      return Promise.all(
-        names
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
+
+    Promise.all([
+
+      caches.keys().then((names) => {
+
+        return Promise.all(
+
+          names.map((name) => {
+
+            if (name !== CACHE_NAME) {
+              return caches.delete(name);
+            }
+
+          })
+
+        );
+
+      }),
+
+      self.clients.claim()
+
+    ])
+
   );
-  self.clients.claim();
+
 });
 
+
+/* =========================
+   通信処理
+
+   HTMLは
+   ネットがあれば最新版
+   ↓
+   ネットがなければ保存版
+========================= */
+
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+
+  if (event.request.method !== "GET") {
+    return;
+  }
+
+
+  /* ページを開く要求 */
+
+  if (event.request.mode === "navigate") {
+
+    event.respondWith(
+
+      fetch(event.request)
+
+        .then((response) => {
+
+          const copy = response.clone();
+
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+
+              cache.put(
+                "./index.html",
+                copy
+              );
+
+            });
+
+          return response;
+
+        })
+
+        .catch(async () => {
+
+          const cache =
+            await caches.open(CACHE_NAME);
+
+          return (
+            await cache.match("./index.html")
+          ) || (
+            await cache.match("./")
+          );
+
+        })
+
+    );
+
+    return;
+
+  }
+
+
+  /* その他のファイル */
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
-    })
+
+    caches.match(event.request)
+
+      .then((cached) => {
+
+        if (cached) {
+          return cached;
+        }
+
+        return fetch(event.request)
+          .then((response) => {
+
+            if (
+              response &&
+              response.status === 200
+            ) {
+
+              const copy =
+                response.clone();
+
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+
+                  cache.put(
+                    event.request,
+                    copy
+                  );
+
+                });
+
+            }
+
+            return response;
+
+          });
+
+      })
+
   );
+
 });
