@@ -873,19 +873,29 @@ const preview =
   document.getElementById("preview");
 
 
-/* タイマー状態 */
+/* =========================
+   タイマー状態
+========================= */
 
 let running = false;
 
 let startRealTime = 0;
 
+/*
+  STARTした瞬間の
+  スライダー位置を保存
+*/
+let startCorrection = 0;
+
 let animationId = null;
 
 const TIMER_STATE_KEY =
-  "quickq_timer_state";
+  "quickq_timer_state_v2";
 
 
-/* 状態保存 */
+/* =========================
+   状態保存
+========================= */
 
 function saveTimerState(){
 
@@ -899,6 +909,15 @@ function saveTimerState(){
       startRealTime:
         startRealTime,
 
+      /*
+        START時の基準位置
+      */
+      startCorrection:
+        startCorrection,
+
+      /*
+        現在のスライダー位置
+      */
       correction:
         Number(correction.value)
 
@@ -915,7 +934,9 @@ function saveTimerState(){
 }
 
 
-/* 状態復元 */
+/* =========================
+   状態復元
+========================= */
 
 function restoreTimerState(){
 
@@ -943,11 +964,39 @@ function restoreTimerState(){
       return false;
     }
 
+
     running = true;
 
     startRealTime =
       Number(state.startRealTime);
 
+
+    /*
+      START時の基準位置を復元
+    */
+
+    if(
+      Number.isFinite(
+        Number(state.startCorrection)
+      )
+    ){
+
+      startCorrection =
+        Number(
+          state.startCorrection
+        );
+
+    }
+    else{
+
+      startCorrection = 0;
+
+    }
+
+
+    /*
+      現在のスライダー位置を復元
+    */
 
     if(
       Number.isFinite(
@@ -966,6 +1015,7 @@ function restoreTimerState(){
 
     }
 
+
     return true;
 
   }
@@ -978,7 +1028,9 @@ function restoreTimerState(){
 }
 
 
-/* 時計 */
+/* =========================
+   時計
+========================= */
 
 function updateClock(){
 
@@ -1005,7 +1057,9 @@ setInterval(
 );
 
 
-/* 時間表示 */
+/* =========================
+   時間表示
+========================= */
 
 function formatTime(milliseconds){
 
@@ -1051,7 +1105,9 @@ function formatTime(milliseconds){
 }
 
 
-/* 経過時間 */
+/* =========================
+   経過時間
+========================= */
 
 function getElapsed(){
 
@@ -1060,9 +1116,17 @@ function getElapsed(){
   }
 
 
-  const correctionMs =
-    Number(
-      correction.value
+  /*
+    STARTした位置から
+    スライダーが何秒動いたか
+    その差だけを補正する
+  */
+
+  const correctionDifferenceMs =
+    (
+      Number(correction.value)
+      -
+      startCorrection
     )
     *
     1000;
@@ -1073,13 +1137,15 @@ function getElapsed(){
     -
     startRealTime
     +
-    correctionMs
+    correctionDifferenceMs
   );
 
 }
 
 
-/* 描画 */
+/* =========================
+   描画
+========================= */
 
 function draw(){
 
@@ -1102,29 +1168,42 @@ function draw(){
 }
 
 
-/* START */
+/* =========================
+   START
+========================= */
 
 function startImmediately(){
 
+  /*
+    今のスライダー位置を
+    新しい0秒位置として記録
+  */
+
+  startCorrection =
+    Number(
+      correction.value
+    );
+
+
+  /*
+    現在時刻を新しいSTART時刻にする
+  */
+
   startRealTime =
     Date.now();
+
 
   running =
     true;
 
 
-  const correctionMs =
-    Number(
-      correction.value
-    )
-    *
-    1000;
-
+  /*
+    スライダー位置に関係なく
+    START時は必ず0秒
+  */
 
   timer.textContent =
-    formatTime(
-      correctionMs
-    );
+    "00:00.0";
 
 
   saveTimerState();
@@ -1160,9 +1239,10 @@ function startImmediately(){
 }
 
 
-/*
-  元の正常動作方式
-*/
+/* =========================
+   STARTイベント
+   元の正常動作方式
+========================= */
 
 startArea.addEventListener(
   "pointerdown",
@@ -1212,7 +1292,9 @@ startArea.addEventListener(
 );
 
 
-/* 補正 */
+/* =========================
+   補正
+========================= */
 
 function updateCorrection(){
 
@@ -1221,6 +1303,10 @@ function updateCorrection(){
       correction.value
     );
 
+
+  /*
+    スライダーそのものの位置表示
+  */
 
   if(value > 0){
 
@@ -1241,6 +1327,11 @@ function updateCorrection(){
 
   }
 
+
+  /*
+    動作中なら
+    START位置との差を即時反映
+  */
 
   if(running){
 
@@ -1263,7 +1354,9 @@ correction.addEventListener(
 );
 
 
-/* 設定 */
+/* =========================
+   設定
+========================= */
 
 settingsButton.addEventListener(
   "pointerdown",
@@ -1301,7 +1394,9 @@ closeSettings.addEventListener(
 );
 
 
-/* 表示設定保存 */
+/* =========================
+   表示設定保存
+========================= */
 
 function saveSetting(
   name,
@@ -1346,7 +1441,9 @@ function loadSetting(
 }
 
 
-/* サイズ */
+/* =========================
+   サイズ
+========================= */
 
 function applySize(value){
 
@@ -1411,7 +1508,9 @@ sizeSetting.addEventListener(
 );
 
 
-/* 太さ */
+/* =========================
+   太さ
+========================= */
 
 function weightName(value){
 
@@ -1484,7 +1583,9 @@ weightSetting.addEventListener(
 );
 
 
-/* フォント */
+/* =========================
+   フォント
+========================= */
 
 const fontButtons =
   document.querySelectorAll(
@@ -1540,7 +1641,9 @@ fontButtons.forEach(
 );
 
 
-/* 色 */
+/* =========================
+   色
+========================= */
 
 const colorButtons =
   document.querySelectorAll(
@@ -1596,7 +1699,9 @@ colorButtons.forEach(
 );
 
 
-/* 設定リセット */
+/* =========================
+   設定リセット
+========================= */
 
 document
 .getElementById(
@@ -1622,7 +1727,9 @@ document
 );
 
 
-/* 表示設定復元 */
+/* =========================
+   表示設定復元
+========================= */
 
 applySize(
   loadSetting(
@@ -1656,7 +1763,9 @@ applyColor(
 );
 
 
-/* タイマー状態復元 */
+/* =========================
+   タイマー状態復元
+========================= */
 
 const restored =
   restoreTimerState();
@@ -1687,7 +1796,9 @@ else{
 }
 
 
-/* 他アプリへ移動 / 復帰 */
+/* =========================
+   他アプリへ移動 / 復帰
+========================= */
 
 document.addEventListener(
   "visibilitychange",
@@ -1751,7 +1862,9 @@ document.addEventListener(
 );
 
 
-/* 画面スリープ防止 */
+/* =========================
+   画面スリープ防止
+========================= */
 
 let wakeLock = null;
 
@@ -1808,9 +1921,7 @@ async function keepScreenAwake(){
 }
 
 
-/*
-  START枠を最初に触った時
-*/
+/* START枠を最初に触った時 */
 
 startArea.addEventListener(
   "pointerdown",
@@ -1822,9 +1933,7 @@ startArea.addEventListener(
 );
 
 
-/*
-  他アプリから戻った時
-*/
+/* 他アプリから戻った時 */
 
 document.addEventListener(
   "visibilitychange",
