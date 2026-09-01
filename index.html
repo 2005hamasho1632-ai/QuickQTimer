@@ -51,12 +51,10 @@ body{
   position:absolute;
   top:max(18px,env(safe-area-inset-top));
   left:22px;
-
   font-size:17px;
   font-weight:600;
   color:#777;
   letter-spacing:.5px;
-
   z-index:20;
 }
 
@@ -64,29 +62,21 @@ body{
 
 #settingsButton{
   position:absolute;
-
   top:max(12px,env(safe-area-inset-top));
   right:14px;
-
   width:52px;
   height:52px;
-
   border:0;
   border-radius:50%;
-
   background:#151515;
   color:#aaa;
-
   font-size:27px;
   line-height:52px;
   text-align:center;
-
   z-index:20;
 }
 
-/* =========================
-   STARTエリア
-========================= */
+/* STARTエリア */
 
 #startArea{
   position:absolute;
@@ -234,7 +224,7 @@ body{
   align-items:center;
 }
 
-/* 目盛り線 */
+/* 目盛り */
 
 .tickMark{
   position:absolute;
@@ -335,7 +325,6 @@ body{
 
 .sliderLabels span{
   position:absolute;
-
   white-space:nowrap;
 }
 
@@ -356,7 +345,6 @@ body{
 .sliderLabels .zero{
   left:50%;
   transform:translateX(-50%);
-
   color:#999;
   font-weight:700;
 }
@@ -597,13 +585,9 @@ body{
     <div class="sliderWrap">
 
       <div class="tickMark tickM20"></div>
-
       <div class="tickMark tickM10"></div>
-
       <div class="tickMark tickZero"></div>
-
       <div class="tickMark tickP10"></div>
-
       <div class="tickMark tickP20"></div>
 
 
@@ -621,33 +605,13 @@ body{
 
     <div class="sliderLabels">
 
-      <span class="m30">
-        −30
-      </span>
-
-      <span class="m20">
-        −20
-      </span>
-
-      <span class="m10">
-        −10
-      </span>
-
-      <span class="zero">
-        0
-      </span>
-
-      <span class="p10">
-        ＋10
-      </span>
-
-      <span class="p20">
-        ＋20
-      </span>
-
-      <span class="p30">
-        ＋30
-      </span>
+      <span class="m30">−30</span>
+      <span class="m20">−20</span>
+      <span class="m10">−10</span>
+      <span class="zero">0</span>
+      <span class="p10">＋10</span>
+      <span class="p20">＋20</span>
+      <span class="p30">＋30</span>
 
     </div>
 
@@ -828,7 +792,9 @@ body{
 <script>
 (() => {
 
-/* 要素取得 */
+/* =========================
+   要素
+========================= */
 
 const timer =
   document.getElementById("timer");
@@ -881,20 +847,14 @@ let running = false;
 
 let startRealTime = 0;
 
-/*
-  STARTした瞬間の
-  スライダー位置を保存
-*/
-let startCorrection = 0;
-
 let animationId = null;
 
 const TIMER_STATE_KEY =
-  "quickq_timer_state_v2";
+  "quickq_timer_state_v3";
 
 
 /* =========================
-   状態保存
+   保存
 ========================= */
 
 function saveTimerState(){
@@ -909,19 +869,13 @@ function saveTimerState(){
       startRealTime:
         startRealTime,
 
-      /*
-        START時の基準位置
-      */
-      startCorrection:
-        startCorrection,
-
-      /*
-        現在のスライダー位置
-      */
       correction:
-        Number(correction.value)
+        Number(
+          correction.value
+        )
 
     };
+
 
     localStorage.setItem(
       TIMER_STATE_KEY,
@@ -935,7 +889,7 @@ function saveTimerState(){
 
 
 /* =========================
-   状態復元
+   復元
 ========================= */
 
 function restoreTimerState(){
@@ -947,12 +901,15 @@ function restoreTimerState(){
         TIMER_STATE_KEY
       );
 
+
     if(!raw){
       return false;
     }
 
+
     const state =
       JSON.parse(raw);
+
 
     if(
       !state ||
@@ -968,35 +925,10 @@ function restoreTimerState(){
     running = true;
 
     startRealTime =
-      Number(state.startRealTime);
+      Number(
+        state.startRealTime
+      );
 
-
-    /*
-      START時の基準位置を復元
-    */
-
-    if(
-      Number.isFinite(
-        Number(state.startCorrection)
-      )
-    ){
-
-      startCorrection =
-        Number(
-          state.startCorrection
-        );
-
-    }
-    else{
-
-      startCorrection = 0;
-
-    }
-
-
-    /*
-      現在のスライダー位置を復元
-    */
 
     if(
       Number.isFinite(
@@ -1009,7 +941,9 @@ function restoreTimerState(){
           -30,
           Math.min(
             30,
-            Number(state.correction)
+            Number(
+              state.correction
+            )
           )
         );
 
@@ -1037,6 +971,7 @@ function updateClock(){
   const now =
     new Date();
 
+
   clock.textContent =
     now.toLocaleTimeString(
       "ja-JP",
@@ -1049,7 +984,9 @@ function updateClock(){
 
 }
 
+
 updateClock();
+
 
 setInterval(
   updateClock,
@@ -1069,20 +1006,24 @@ function formatTime(milliseconds){
       milliseconds
     );
 
+
   const totalTenths =
     Math.floor(
       milliseconds / 100
     );
+
 
   const minutes =
     Math.floor(
       totalTenths / 600
     );
 
+
   const seconds =
     Math.floor(
       (totalTenths % 600) / 10
     );
+
 
   const tenths =
     totalTenths % 10;
@@ -1117,16 +1058,13 @@ function getElapsed(){
 
 
   /*
-    STARTした位置から
-    スライダーが何秒動いたか
-    その差だけを補正する
+    スライダーは
+    曲中の補正だけに使用
   */
 
-  const correctionDifferenceMs =
-    (
-      Number(correction.value)
-      -
-      startCorrection
+  const correctionMs =
+    Number(
+      correction.value
     )
     *
     1000;
@@ -1137,7 +1075,7 @@ function getElapsed(){
     -
     startRealTime
     +
-    correctionDifferenceMs
+    correctionMs
   );
 
 }
@@ -1169,24 +1107,25 @@ function draw(){
 
 
 /* =========================
-   START
+   新しい曲 START
 ========================= */
 
 function startImmediately(){
 
   /*
-    今のスライダー位置を
-    新しい0秒位置として記録
+    ★重要
+    新しい曲なので
+    補正を完全に0へ戻す
   */
 
-  startCorrection =
-    Number(
-      correction.value
-    );
+  correction.value = 0;
+
+  correctionValue.textContent =
+    "0.0秒";
 
 
   /*
-    現在時刻を新しいSTART時刻にする
+    タイマーも完全に0から
   */
 
   startRealTime =
@@ -1197,14 +1136,13 @@ function startImmediately(){
     true;
 
 
-  /*
-    スライダー位置に関係なく
-    START時は必ず0秒
-  */
-
   timer.textContent =
     "00:00.0";
 
+
+  /*
+    新しい0状態を保存
+  */
 
   saveTimerState();
 
@@ -1224,6 +1162,10 @@ function startImmediately(){
     );
 
 
+  /*
+    START確認フラッシュ
+  */
+
   flash.classList.remove(
     "active"
   );
@@ -1240,13 +1182,12 @@ function startImmediately(){
 
 
 /* =========================
-   STARTイベント
-   元の正常動作方式
+   START操作
 ========================= */
 
 startArea.addEventListener(
   "pointerdown",
-  (event) => {
+  () => {
 
     if(
       settings.classList.contains(
@@ -1255,6 +1196,7 @@ startArea.addEventListener(
     ){
       return;
     }
+
 
     startImmediately();
 
@@ -1269,11 +1211,12 @@ startArea.addEventListener(
 
 startArea.addEventListener(
   "touchstart",
-  (event) => {
+  () => {
 
     if(window.PointerEvent){
       return;
     }
+
 
     if(
       settings.classList.contains(
@@ -1282,6 +1225,7 @@ startArea.addEventListener(
     ){
       return;
     }
+
 
     startImmediately();
 
@@ -1293,7 +1237,7 @@ startArea.addEventListener(
 
 
 /* =========================
-   補正
+   曲中の補正
 ========================= */
 
 function updateCorrection(){
@@ -1303,10 +1247,6 @@ function updateCorrection(){
       correction.value
     );
 
-
-  /*
-    スライダーそのものの位置表示
-  */
 
   if(value > 0){
 
@@ -1329,8 +1269,8 @@ function updateCorrection(){
 
 
   /*
-    動作中なら
-    START位置との差を即時反映
+    曲中なら
+    その場で補正を反映
   */
 
   if(running){
@@ -1360,7 +1300,7 @@ correction.addEventListener(
 
 settingsButton.addEventListener(
   "pointerdown",
-  (event) => {
+  event => {
 
     event.stopPropagation();
 
@@ -1370,7 +1310,7 @@ settingsButton.addEventListener(
 
 settingsButton.addEventListener(
   "click",
-  (event) => {
+  event => {
 
     event.stopPropagation();
 
@@ -1522,13 +1462,16 @@ function weightName(value){
     return "細い";
   }
 
+
   if(value <= 500){
     return "標準";
   }
 
+
   if(value <= 700){
     return "太字";
   }
+
 
   return "極太";
 
@@ -1764,7 +1707,7 @@ applyColor(
 
 
 /* =========================
-   タイマー状態復元
+   タイマー復元
 ========================= */
 
 const restored =
@@ -1790,6 +1733,16 @@ if(restored){
 }
 else{
 
+  /*
+    初回起動
+  */
+
+  correction.value = 0;
+
+  correctionValue.textContent =
+    "0.0秒";
+
+
   timer.textContent =
     "00:00.0";
 
@@ -1797,7 +1750,7 @@ else{
 
 
 /* =========================
-   他アプリへ移動 / 復帰
+   他アプリへ移動・復帰
 ========================= */
 
 document.addEventListener(
@@ -1921,7 +1874,7 @@ async function keepScreenAwake(){
 }
 
 
-/* START枠を最初に触った時 */
+/* 最初のSTARTでスリープ防止 */
 
 startArea.addEventListener(
   "pointerdown",
