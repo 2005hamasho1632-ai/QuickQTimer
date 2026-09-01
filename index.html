@@ -30,13 +30,13 @@ html,body{
   background:#000;
   color:#fff;
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
-  touch-action:manipulation;
   user-select:none;
   -webkit-user-select:none;
 }
 
 body{
   position:relative;
+  overscroll-behavior:none;
 }
 
 #app{
@@ -45,7 +45,9 @@ body{
   overflow:hidden;
 }
 
-/* 時計 */
+/* =========================
+   時計
+========================= */
 
 #clock{
   position:absolute;
@@ -55,10 +57,12 @@ body{
   font-weight:600;
   color:#777;
   letter-spacing:.5px;
-  z-index:20;
+  z-index:30;
 }
 
-/* 設定 */
+/* =========================
+   設定
+========================= */
 
 #settingsButton{
   position:absolute;
@@ -71,9 +75,8 @@ body{
   background:#151515;
   color:#aaa;
   font-size:27px;
-  line-height:52px;
-  text-align:center;
-  z-index:20;
+  z-index:30;
+  touch-action:manipulation;
 }
 
 /* =========================
@@ -108,13 +111,12 @@ body{
   content:"START";
 
   position:absolute;
-
   left:50%;
   bottom:12px;
 
   transform:translateX(-50%);
 
-  color:#3f3f3f;
+  color:#444;
 
   font-size:12px;
   font-weight:700;
@@ -124,41 +126,8 @@ body{
 }
 
 /* =========================
-   STOPボタン
+   タイマー
 ========================= */
-
-#stopButton{
-  position:absolute;
-
-  left:50%;
-  top:24%;
-
-  transform:translateX(-50%);
-
-  min-width:130px;
-  height:52px;
-
-  border:2px solid #ff4545;
-  border-radius:14px;
-
-  background:#351010;
-  color:#ff5555;
-
-  font-size:19px;
-  font-weight:800;
-  letter-spacing:1px;
-
-  z-index:30;
-
-  touch-action:manipulation;
-}
-
-#stopButton:active{
-  background:#7a1717;
-  color:#fff;
-}
-
-/* タイマー */
 
 #timerArea{
   position:absolute;
@@ -181,10 +150,11 @@ body{
   );
 
   font-weight:700;
+
   line-height:1;
   letter-spacing:-0.07em;
 
-  color:#ffffff;
+  color:#fff;
 
   white-space:nowrap;
 
@@ -196,7 +166,49 @@ body{
   pointer-events:none;
 }
 
-/* フラッシュ */
+/* =========================
+   STOP
+   STARTとは完全に独立
+========================= */
+
+#stopButton{
+  position:absolute;
+
+  left:50%;
+
+  top:max(
+    150px,
+    calc(env(safe-area-inset-top) + 135px)
+  );
+
+  transform:translateX(-50%);
+
+  width:138px;
+  height:54px;
+
+  border:2px solid #ff5050;
+  border-radius:15px;
+
+  background:#451313;
+  color:#ff5757;
+
+  font-size:19px;
+  font-weight:800;
+  letter-spacing:1px;
+
+  z-index:40;
+
+  touch-action:manipulation;
+}
+
+#stopButton:active{
+  background:#8b2020;
+  color:#fff;
+}
+
+/* =========================
+   フラッシュ
+========================= */
 
 #flash{
   position:absolute;
@@ -221,7 +233,7 @@ body{
 }
 
 /* =========================
-   補正
+   補正パネル
 ========================= */
 
 #adjustPanel{
@@ -235,7 +247,11 @@ body{
     calc(env(safe-area-inset-bottom) + 48px)
   );
 
-  z-index:10;
+  height:125px;
+
+  z-index:20;
+
+  touch-action:none;
 }
 
 #correctionValue{
@@ -249,80 +265,30 @@ body{
   margin-bottom:12px;
 }
 
+/* =========================
+   スライダー
+========================= */
+
 .sliderWrap{
   position:relative;
 
   width:100%;
-  height:50px;
-
-  display:flex;
-  align-items:center;
+  height:52px;
 }
 
-/* =========================
-   10秒ごとの目盛り
-========================= */
-
-.tickMark{
-  position:absolute;
-
-  top:9px;
-  bottom:9px;
-
-  width:2px;
-
-  background:#777;
-
-  transform:translateX(-50%);
-
-  border-radius:2px;
-
-  pointer-events:none;
-
-  z-index:1;
-}
-
-/* -20秒 */
-.tickM20{
-  left:16.6667%;
-}
-
-/* -10秒 */
-.tickM10{
-  left:33.3333%;
-}
-
-/* 0秒 */
-.tickZero{
-  left:50%;
-
-  width:3px;
-
-  top:3px;
-  bottom:3px;
-
-  background:#fff;
-
-  opacity:.85;
-}
-
-/* +10秒 */
-.tickP10{
-  left:66.6667%;
-}
-
-/* +20秒 */
-.tickP20{
-  left:83.3333%;
-}
+/* スライダー本体 */
 
 #correction{
-  position:relative;
+  position:absolute;
 
-  z-index:2;
+  left:0;
+  top:23px;
 
   width:100%;
   height:6px;
+
+  margin:0;
+  padding:0;
 
   appearance:none;
   -webkit-appearance:none;
@@ -332,6 +298,10 @@ body{
   border-radius:10px;
 
   outline:none;
+
+  z-index:5;
+
+  touch-action:none;
 }
 
 #correction::-webkit-slider-thumb{
@@ -346,59 +316,116 @@ body{
   background:#fff;
 
   border:2px solid #aaa;
+
+  box-shadow:0 0 0 1px #555;
 }
 
-/* 目盛り数字 */
+/* =========================
+   目盛り線
+========================= */
+
+.tick{
+  position:absolute;
+
+  top:11px;
+
+  width:2px;
+  height:30px;
+
+  background:#777;
+
+  transform:translateX(-50%);
+
+  pointer-events:none;
+
+  z-index:3;
+}
+
+.tick.minus20{
+  left:16.6667%;
+}
+
+.tick.minus10{
+  left:33.3333%;
+}
+
+.tick.zero{
+  left:50%;
+
+  width:3px;
+  height:40px;
+
+  top:6px;
+
+  background:#fff;
+}
+
+.tick.plus10{
+  left:66.6667%;
+}
+
+.tick.plus20{
+  left:83.3333%;
+}
+
+/* =========================
+   スライダー数字
+========================= */
 
 .sliderLabels{
   position:relative;
 
-  height:30px;
+  width:100%;
+  height:28px;
 
-  margin-top:2px;
+  margin-top:1px;
 
   color:#666;
 
-  font-size:14px;
+  font-size:13px;
+  font-weight:600;
 }
 
 .sliderLabels span{
   position:absolute;
+  top:0;
+  white-space:nowrap;
+}
 
+.labelM30{
+  left:0;
+}
+
+.labelM20{
+  left:16.6667%;
   transform:translateX(-50%);
 }
 
-.sliderLabels .m30{
-  left:0;
-  transform:none;
-}
-
-.sliderLabels .m20{
-  left:16.6667%;
-}
-
-.sliderLabels .m10{
+.labelM10{
   left:33.3333%;
+  transform:translateX(-50%);
 }
 
-.sliderLabels .zero{
+.labelZero{
   left:50%;
+  transform:translateX(-50%);
 
   color:#aaa;
   font-weight:800;
 }
 
-.sliderLabels .p10{
+.labelP10{
   left:66.6667%;
+  transform:translateX(-50%);
 }
 
-.sliderLabels .p20{
+.labelP20{
   left:83.3333%;
+  transform:translateX(-50%);
 }
 
-.sliderLabels .p30{
+.labelP30{
   right:0;
-  transform:none;
 }
 
 /* =========================
@@ -497,10 +524,13 @@ body{
 
 .fontButton{
   min-height:56px;
+
   border:1px solid #333;
   border-radius:14px;
+
   background:#111;
   color:#bbb;
+
   font-size:18px;
 }
 
@@ -519,7 +549,9 @@ body{
 .colorButton{
   width:52px;
   height:52px;
+
   border-radius:50%;
+
   border:3px solid transparent;
 }
 
@@ -538,6 +570,7 @@ body{
 
 #preview{
   margin-top:30px;
+
   padding:24px 5px;
 
   border-top:1px solid #222;
@@ -571,6 +604,7 @@ body{
 </style>
 </head>
 
+
 <body>
 
 <div id="app">
@@ -584,17 +618,9 @@ body{
   </button>
 
 
+  <!-- START専用 -->
+
   <div id="startArea">
-
-    <!-- STOPはSTARTエリア内だが
-         イベントを止めるので
-         再スタートしない -->
-
-    <button
-      id="stopButton"
-      type="button">
-      ■ STOP
-    </button>
 
     <div id="timerArea">
 
@@ -607,13 +633,260 @@ body{
   </div>
 
 
+  <!-- STOPはSTARTの外 -->
+
+  <button
+    id="stopButton"
+    type="button">
+    ■ STOP
+  </button>
+
+
+  <!-- 補正 -->
+
   <div id="adjustPanel">
 
     <div id="correctionValue">
       0.0秒
     </div>
 
+
     <div class="sliderWrap">
 
-      <div class="tickMark tickM20"></div>
-      <div class="
+      <div class="tick minus20"></div>
+      <div class="tick minus10"></div>
+      <div class="tick zero"></div>
+      <div class="tick plus10"></div>
+      <div class="tick plus20"></div>
+
+      <input
+        id="correction"
+        type="range"
+        min="-30"
+        max="30"
+        step="0.5"
+        value="0"
+      >
+
+    </div>
+
+
+    <div class="sliderLabels">
+
+      <span class="labelM30">
+        −30
+      </span>
+
+      <span class="labelM20">
+        −20
+      </span>
+
+      <span class="labelM10">
+        −10
+      </span>
+
+      <span class="labelZero">
+        0
+      </span>
+
+      <span class="labelP10">
+        +10
+      </span>
+
+      <span class="labelP20">
+        +20
+      </span>
+
+      <span class="labelP30">
+        +30
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div id="flash"></div>
+
+</div>
+
+
+<!-- =========================
+     設定
+========================= -->
+
+<div id="settings">
+
+  <div class="settingsHeader">
+
+    <div class="settingsTitle">
+      表示設定
+    </div>
+
+    <button id="closeSettings">
+      ×
+    </button>
+
+  </div>
+
+
+  <div class="settingGroup">
+
+    <div class="settingLabel">
+      数字の大きさ
+    </div>
+
+    <div
+      class="settingValue"
+      id="sizeValue">
+      100%
+    </div>
+
+    <input
+      id="sizeSetting"
+      class="settingRange"
+      type="range"
+      min="70"
+      max="135"
+      step="1"
+      value="100"
+    >
+
+  </div>
+
+
+  <div class="settingGroup">
+
+    <div class="settingLabel">
+      数字の太さ
+    </div>
+
+    <div
+      class="settingValue"
+      id="weightValue">
+      太字
+    </div>
+
+    <input
+      id="weightSetting"
+      class="settingRange"
+      type="range"
+      min="300"
+      max="900"
+      step="100"
+      value="700"
+    >
+
+  </div>
+
+
+  <div class="settingGroup">
+
+    <div class="settingLabel">
+      フォント
+    </div>
+
+    <div class="fontGrid">
+
+      <button
+        class="fontButton selected"
+        data-font="Arial, sans-serif">
+        ABC 123
+      </button>
+
+      <button
+        class="fontButton"
+        data-font="'Arial Black', Arial, sans-serif"
+        style="font-family:'Arial Black',Arial,sans-serif">
+        ABC 123
+      </button>
+
+      <button
+        class="fontButton"
+        data-font="'Courier New', monospace"
+        style="font-family:'Courier New',monospace">
+        00:12.3
+      </button>
+
+      <button
+        class="fontButton"
+        data-font="-apple-system, BlinkMacSystemFont, sans-serif">
+        iPhone
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="settingGroup">
+
+    <div class="settingLabel">
+      数字の色
+    </div>
+
+    <div class="colorGrid">
+
+      <button
+        class="colorButton white selected"
+        data-color="#ffffff">
+      </button>
+
+      <button
+        class="colorButton green"
+        data-color="#39ff88">
+      </button>
+
+      <button
+        class="colorButton red"
+        data-color="#ff4b4b">
+      </button>
+
+      <button
+        class="colorButton yellow"
+        data-color="#ffe04b">
+      </button>
+
+      <button
+        class="colorButton blue"
+        data-color="#55aaff">
+      </button>
+
+      <button
+        class="colorButton orange"
+        data-color="#ff963f">
+      </button>
+
+      <button
+        class="colorButton cyan"
+        data-color="#45f4ff">
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div id="preview">
+    00:12.3
+  </div>
+
+
+  <button id="resetSettings">
+    表示設定を初期状態に戻す
+  </button>
+
+</div>
+
+
+<script>
+(() => {
+
+/* =========================
+   要素
+========================= */
+
+const timer =
+  document.getElementById("timer");
+
+const
