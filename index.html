@@ -161,6 +161,38 @@ body{
   pointer-events:none;
 }
 
+/* STOPボタン */
+
+#stopButton{
+  position:absolute;
+
+  left:50%;
+
+  bottom:max(
+    190px,
+    calc(env(safe-area-inset-bottom) + 165px)
+  );
+
+  transform:translateX(-50%);
+
+  width:150px;
+  height:52px;
+
+  border:2px solid #ff4b4b;
+  border-radius:15px;
+
+  background:#3b1010;
+  color:#ff5a5a;
+
+  font-size:19px;
+  font-weight:800;
+  letter-spacing:2px;
+
+  z-index:30;
+
+  touch-action:manipulation;
+}
+
 /* タッチ時フラッシュ */
 
 #flash{
@@ -575,6 +607,13 @@ body{
   </div>
 
 
+  <button
+    id="stopButton"
+    type="button">
+    STOP
+  </button>
+
+
   <div id="adjustPanel">
 
     <div id="correctionValue">
@@ -805,6 +844,9 @@ const clock =
 const startArea =
   document.getElementById("startArea");
 
+const stopButton =
+  document.getElementById("stopButton");
+
 const correction =
   document.getElementById("correction");
 
@@ -847,10 +889,13 @@ let running = false;
 
 let startRealTime = 0;
 
+/* STOPした瞬間の表示時間 */
+let stoppedElapsed = 0;
+
 let animationId = null;
 
 const TIMER_STATE_KEY =
-  "quickq_timer_state_v3";
+  "quickq_timer_state_v4";
 
 
 /* =========================
@@ -868,6 +913,9 @@ function saveTimerState(){
 
       startRealTime:
         startRealTime,
+
+      stoppedElapsed:
+        stoppedElapsed,
 
       correction:
         Number(
@@ -911,23 +959,9 @@ function restoreTimerState(){
       JSON.parse(raw);
 
 
-    if(
-      !state ||
-      state.running !== true ||
-      !Number.isFinite(
-        Number(state.startRealTime)
-      )
-    ){
+    if(!state){
       return false;
     }
-
-
-    running = true;
-
-    startRealTime =
-      Number(
-        state.startRealTime
-      );
 
 
     if(
@@ -950,7 +984,52 @@ function restoreTimerState(){
     }
 
 
-    return true;
+    if(
+      state.running === true
+      &&
+      Number.isFinite(
+        Number(state.startRealTime)
+      )
+    ){
+
+      running = true;
+
+      startRealTime =
+        Number(
+          state.startRealTime
+        );
+
+      stoppedElapsed = 0;
+
+      return true;
+
+    }
+
+
+    if(
+      state.running === false
+      &&
+      Number.isFinite(
+        Number(state.stoppedElapsed)
+      )
+    ){
+
+      running = false;
+
+      stoppedElapsed =
+        Math.max(
+          0,
+          Number(
+            state.stoppedElapsed
+          )
+        );
+
+      return true;
+
+    }
+
+
+    return false;
 
   }
   catch(e){
@@ -1052,15 +1131,17 @@ function formatTime(milliseconds){
 
 function getElapsed(){
 
+  /*
+    STOP中は
+    STOPした瞬間の時間を返す
+  */
+
   if(!running){
-    return 0;
+
+    return stoppedElapsed;
+
   }
 
-
-  /*
-    スライダーは
-    曲中の補正だけに使用
-  */
 
   const correctionMs =
     Number(
@@ -1113,9 +1194,8 @@ function draw(){
 function startImmediately(){
 
   /*
-    ★重要
     新しい曲なので
-    補正を完全に0へ戻す
+    補正を0へ戻す
   */
 
   correction.value = 0;
@@ -1125,29 +1205,25 @@ function startImmediately(){
 
 
   /*
-    タイマーも完全に0から
+    完全に0からSTART
   */
+
+  stoppedElapsed = 0;
 
   startRealTime =
     Date.now();
 
-
   running =
     true;
-
 
   timer.textContent =
     "00:00.0";
 
 
-  /*
-    新しい0状態を保存
-  */
-
   saveTimerState();
 
 
-  if(animationId){
+  if(animationId !== null){
 
     cancelAnimationFrame(
       animationId
@@ -1162,10 +1238,6 @@ function startImmediately(){
     );
 
 
-  /*
-    START確認フラッシュ
-  */
-
   flash.classList.remove(
     "active"
   );
@@ -1177,6 +1249,53 @@ function startImmediately(){
   flash.classList.add(
     "active"
   );
+
+}
+
+
+/* =========================
+   STOP
+========================= */
+
+function stopTimer(){
+
+  if(!running){
+    return;
+  }
+
+
+  /*
+    STOPを押した瞬間の
+    正確な時間を保存
+  */
+
+  stoppedElapsed =
+    getElapsed();
+
+
+  running =
+    false;
+
+
+  if(animationId !== null){
+
+    cancelAnimationFrame(
+      animationId
+    );
+
+    animationId =
+      null;
+
+  }
+
+
+  timer.textContent =
+    formatTime(
+      stoppedElapsed
+    );
+
+
+  saveTimerState();
 
 }
 
@@ -1237,6 +1356,51 @@ startArea.addEventListener(
 
 
 /* =========================
+   STOP操作
+========================= */
+
+stopButton.addEventListener(
+  "pointerdown",
+  event => {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    stopTimer();
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+/* 古いiPhone用 */
+
+stopButton.addEventListener(
+  "touchstart",
+  event => {
+
+    if(window.PointerEvent){
+      return;
+    }
+
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    stopTimer();
+
+  },
+  {
+    passive:false
+  }
+);
+
+
+/* =========================
    曲中の補正
 ========================= */
 
@@ -1269,8 +1433,7 @@ function updateCorrection(){
 
 
   /*
-    曲中なら
-    その場で補正を反映
+    曲中だけ補正を反映
   */
 
   if(running){
@@ -1287,6 +1450,8 @@ function updateCorrection(){
 
 }
 
+
+/* スライダー操作 */
 
 correction.addEventListener(
   "input",
@@ -1725,17 +1890,17 @@ if(restored){
     );
 
 
-  animationId =
-    requestAnimationFrame(
-      draw
-    );
+  if(running){
+
+    animationId =
+      requestAnimationFrame(
+        draw
+      );
+
+  }
 
 }
 else{
-
-  /*
-    初回起動
-  */
 
   correction.value = 0;
 
@@ -1763,6 +1928,11 @@ document.addEventListener(
       "visible"
     ){
 
+      /*
+        START中なら
+        実時間から再計算
+      */
+
       if(running){
 
         timer.textContent =
@@ -1771,7 +1941,7 @@ document.addEventListener(
           );
 
 
-        if(animationId){
+        if(animationId !== null){
 
           cancelAnimationFrame(
             animationId
@@ -1787,17 +1957,31 @@ document.addEventListener(
 
       }
 
-    }
-    else{
+      /*
+        STOP中なら
+        停止時間をそのまま表示
+      */
 
-      if(running){
+      else{
 
-        saveTimerState();
+        timer.textContent =
+          formatTime(
+            stoppedElapsed
+          );
 
       }
 
+    }
+    else{
 
-      if(animationId){
+      /*
+        現在状態を保存
+      */
+
+      saveTimerState();
+
+
+      if(animationId !== null){
 
         cancelAnimationFrame(
           animationId
