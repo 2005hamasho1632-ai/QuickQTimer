@@ -1,4 +1,4 @@
-const CACHE_NAME = "quickq-timer-v12";
+const CACHE_NAME = "quickq-timer-v13";
 
 const APP_SHELL = [
   "./",
