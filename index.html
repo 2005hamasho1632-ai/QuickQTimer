@@ -58,7 +58,39 @@ body{
   z-index:20;
 }
 
-/* 設定ボタン */
+/* STOPボタン
+   START枠の完全な外側 */
+
+#stopButton{
+  position:absolute;
+
+  top:max(
+    12px,
+    env(safe-area-inset-top)
+  );
+
+  left:50%;
+  transform:translateX(-50%);
+
+  width:150px;
+  height:52px;
+
+  border:2px solid #ff5b5b;
+  border-radius:15px;
+
+  background:#461515;
+  color:#ff6464;
+
+  font-size:19px;
+  font-weight:800;
+  letter-spacing:2px;
+
+  z-index:30;
+
+  touch-action:manipulation;
+}
+
+/* 設定 */
 
 #settingsButton{
   position:absolute;
@@ -73,17 +105,18 @@ body{
   font-size:27px;
   line-height:52px;
   text-align:center;
-  z-index:20;
+  z-index:30;
 }
 
-/* STARTエリア */
+/* STARTエリア
+   STOPより完全に下 */
 
 #startArea{
   position:absolute;
 
   top:max(
-    78px,
-    calc(env(safe-area-inset-top) + 62px)
+    88px,
+    calc(env(safe-area-inset-top) + 72px)
   );
 
   left:8px;
@@ -106,7 +139,6 @@ body{
   content:"START";
 
   position:absolute;
-
   left:50%;
   bottom:12px;
 
@@ -144,13 +176,10 @@ body{
   );
 
   font-weight:700;
-
   line-height:1;
-
   letter-spacing:-0.07em;
 
   color:#ffffff;
-
   white-space:nowrap;
 
   font-variant-numeric:tabular-nums;
@@ -161,39 +190,7 @@ body{
   pointer-events:none;
 }
 
-/* STOPボタン */
-
-#stopButton{
-  position:absolute;
-
-  left:50%;
-
-  bottom:max(
-    190px,
-    calc(env(safe-area-inset-bottom) + 165px)
-  );
-
-  transform:translateX(-50%);
-
-  width:150px;
-  height:52px;
-
-  border:2px solid #ff4b4b;
-  border-radius:15px;
-
-  background:#3b1010;
-  color:#ff5a5a;
-
-  font-size:19px;
-  font-weight:800;
-  letter-spacing:2px;
-
-  z-index:30;
-
-  touch-action:manipulation;
-}
-
-/* タッチ時フラッシュ */
+/* STARTフラッシュ */
 
 #flash{
   position:absolute;
@@ -277,34 +274,20 @@ body{
   z-index:1;
 }
 
-.tickM20{
-  left:16.6667%;
-}
-
-.tickM10{
-  left:33.3333%;
-}
+.tickM20{left:16.6667%;}
+.tickM10{left:33.3333%;}
 
 .tickZero{
   left:50%;
-
   width:3px;
-
   top:3px;
   bottom:3px;
-
   background:#fff;
-
   opacity:.75;
 }
 
-.tickP10{
-  left:66.6667%;
-}
-
-.tickP20{
-  left:83.3333%;
-}
+.tickP10{left:66.6667%;}
+.tickP20{left:83.3333%;}
 
 /* スライダー */
 
@@ -340,7 +323,7 @@ body{
   border:2px solid #aaa;
 }
 
-/* スライダー数字 */
+/* 数字 */
 
 .sliderLabels{
   position:relative;
@@ -360,9 +343,7 @@ body{
   white-space:nowrap;
 }
 
-.sliderLabels .m30{
-  left:0;
-}
+.sliderLabels .m30{left:0;}
 
 .sliderLabels .m20{
   left:16.6667%;
@@ -487,8 +468,6 @@ body{
   background:#fff;
 }
 
-/* フォント */
-
 .fontGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -512,8 +491,6 @@ body{
   color:#fff;
   background:#222;
 }
-
-/* 色 */
 
 .colorGrid{
   display:flex;
@@ -542,8 +519,6 @@ body{
 .blue{background:#55aaff;}
 .orange{background:#ff963f;}
 .cyan{background:#45f4ff;}
-
-/* プレビュー */
 
 #preview{
   margin-top:30px;
@@ -577,7 +552,6 @@ body{
 
   font-size:17px;
 }
-
 </style>
 </head>
 
@@ -587,13 +561,20 @@ body{
 
   <div id="clock"></div>
 
+  <!-- STOPはSTARTの外 -->
+  <button
+    id="stopButton"
+    type="button">
+    STOP
+  </button>
+
   <button
     id="settingsButton"
     aria-label="設定">
     ⚙︎
   </button>
 
-
+  <!-- START -->
   <div id="startArea">
 
     <div id="timerArea">
@@ -606,20 +587,12 @@ body{
 
   </div>
 
-
-  <button
-    id="stopButton"
-    type="button">
-    STOP
-  </button>
-
-
+  <!-- 補正 -->
   <div id="adjustPanel">
 
     <div id="correctionValue">
       0.0秒
     </div>
-
 
     <div class="sliderWrap">
 
@@ -629,18 +602,15 @@ body{
       <div class="tickMark tickP10"></div>
       <div class="tickMark tickP20"></div>
 
-
       <input
         id="correction"
         type="range"
         min="-30"
         max="30"
         step="0.5"
-        value="0"
-      >
+        value="0">
 
     </div>
-
 
     <div class="sliderLabels">
 
@@ -655,7 +625,6 @@ body{
     </div>
 
   </div>
-
 
   <div id="flash"></div>
 
@@ -678,7 +647,6 @@ body{
 
   </div>
 
-
   <div class="settingGroup">
 
     <div class="settingLabel">
@@ -698,11 +666,9 @@ body{
       min="70"
       max="135"
       step="1"
-      value="100"
-    >
+      value="100">
 
   </div>
-
 
   <div class="settingGroup">
 
@@ -723,11 +689,9 @@ body{
       min="300"
       max="900"
       step="100"
-      value="700"
-    >
+      value="700">
 
   </div>
-
 
   <div class="settingGroup">
 
@@ -767,7 +731,6 @@ body{
 
   </div>
 
-
   <div class="settingGroup">
 
     <div class="settingLabel">
@@ -776,50 +739,21 @@ body{
 
     <div class="colorGrid">
 
-      <button
-        class="colorButton white selected"
-        data-color="#ffffff">
-      </button>
-
-      <button
-        class="colorButton green"
-        data-color="#39ff88">
-      </button>
-
-      <button
-        class="colorButton red"
-        data-color="#ff4b4b">
-      </button>
-
-      <button
-        class="colorButton yellow"
-        data-color="#ffe04b">
-      </button>
-
-      <button
-        class="colorButton blue"
-        data-color="#55aaff">
-      </button>
-
-      <button
-        class="colorButton orange"
-        data-color="#ff963f">
-      </button>
-
-      <button
-        class="colorButton cyan"
-        data-color="#45f4ff">
-      </button>
+      <button class="colorButton white selected" data-color="#ffffff"></button>
+      <button class="colorButton green" data-color="#39ff88"></button>
+      <button class="colorButton red" data-color="#ff4b4b"></button>
+      <button class="colorButton yellow" data-color="#ffe04b"></button>
+      <button class="colorButton blue" data-color="#55aaff"></button>
+      <button class="colorButton orange" data-color="#ff963f"></button>
+      <button class="colorButton cyan" data-color="#45f4ff"></button>
 
     </div>
 
   </div>
 
-
   <div id="preview">
     00:12.3
   </div>
-
 
   <button id="resetSettings">
     表示設定を初期状態に戻す
@@ -831,9 +765,7 @@ body{
 <script>
 (() => {
 
-/* =========================
-   要素
-========================= */
+/* 要素 */
 
 const timer =
   document.getElementById("timer");
@@ -881,15 +813,12 @@ const preview =
   document.getElementById("preview");
 
 
-/* =========================
-   タイマー状態
-========================= */
+/* タイマー状態 */
 
 let running = false;
 
 let startRealTime = 0;
 
-/* STOPした瞬間の表示時間 */
 let stoppedElapsed = 0;
 
 let animationId = null;
@@ -898,9 +827,7 @@ const TIMER_STATE_KEY =
   "quickq_timer_state_v4";
 
 
-/* =========================
-   保存
-========================= */
+/* 保存 */
 
 function saveTimerState(){
 
@@ -908,22 +835,17 @@ function saveTimerState(){
 
     const state = {
 
-      running:
-        running,
+      running:running,
 
-      startRealTime:
-        startRealTime,
+      startRealTime:startRealTime,
 
       stoppedElapsed:
         stoppedElapsed,
 
       correction:
-        Number(
-          correction.value
-        )
+        Number(correction.value)
 
     };
-
 
     localStorage.setItem(
       TIMER_STATE_KEY,
@@ -936,9 +858,7 @@ function saveTimerState(){
 }
 
 
-/* =========================
-   復元
-========================= */
+/* 復元 */
 
 function restoreTimerState(){
 
@@ -949,20 +869,16 @@ function restoreTimerState(){
         TIMER_STATE_KEY
       );
 
-
     if(!raw){
       return false;
     }
 
-
     const state =
       JSON.parse(raw);
-
 
     if(!state){
       return false;
     }
-
 
     if(
       Number.isFinite(
@@ -975,18 +891,14 @@ function restoreTimerState(){
           -30,
           Math.min(
             30,
-            Number(
-              state.correction
-            )
+            Number(state.correction)
           )
         );
 
     }
 
-
     if(
-      state.running === true
-      &&
+      state.running === true &&
       Number.isFinite(
         Number(state.startRealTime)
       )
@@ -995,20 +907,15 @@ function restoreTimerState(){
       running = true;
 
       startRealTime =
-        Number(
-          state.startRealTime
-        );
+        Number(state.startRealTime);
 
       stoppedElapsed = 0;
 
       return true;
-
     }
 
-
     if(
-      state.running === false
-      &&
+      state.running === false &&
       Number.isFinite(
         Number(state.stoppedElapsed)
       )
@@ -1017,17 +924,10 @@ function restoreTimerState(){
       running = false;
 
       stoppedElapsed =
-        Math.max(
-          0,
-          Number(
-            state.stoppedElapsed
-          )
-        );
+        Number(state.stoppedElapsed);
 
       return true;
-
     }
-
 
     return false;
 
@@ -1041,15 +941,12 @@ function restoreTimerState(){
 }
 
 
-/* =========================
-   時計
-========================= */
+/* 時計 */
 
 function updateClock(){
 
   const now =
     new Date();
-
 
   clock.textContent =
     now.toLocaleTimeString(
@@ -1063,9 +960,7 @@ function updateClock(){
 
 }
 
-
 updateClock();
-
 
 setInterval(
   updateClock,
@@ -1073,9 +968,7 @@ setInterval(
 );
 
 
-/* =========================
-   時間表示
-========================= */
+/* 表示 */
 
 function formatTime(milliseconds){
 
@@ -1085,28 +978,23 @@ function formatTime(milliseconds){
       milliseconds
     );
 
-
   const totalTenths =
     Math.floor(
       milliseconds / 100
     );
-
 
   const minutes =
     Math.floor(
       totalTenths / 600
     );
 
-
   const seconds =
     Math.floor(
       (totalTenths % 600) / 10
     );
 
-
   const tenths =
     totalTenths % 10;
-
 
   return (
     String(minutes)
@@ -1125,16 +1013,9 @@ function formatTime(milliseconds){
 }
 
 
-/* =========================
-   経過時間
-========================= */
+/* 経過時間 */
 
 function getElapsed(){
-
-  /*
-    STOP中は
-    STOPした瞬間の時間を返す
-  */
 
   if(!running){
 
@@ -1142,14 +1023,10 @@ function getElapsed(){
 
   }
 
-
   const correctionMs =
-    Number(
-      correction.value
-    )
+    Number(correction.value)
     *
     1000;
-
 
   return (
     Date.now()
@@ -1162,9 +1039,7 @@ function getElapsed(){
 }
 
 
-/* =========================
-   描画
-========================= */
+/* 描画 */
 
 function draw(){
 
@@ -1172,12 +1047,10 @@ function draw(){
     return;
   }
 
-
   timer.textContent =
     formatTime(
       getElapsed()
     );
-
 
   animationId =
     requestAnimationFrame(
@@ -1187,43 +1060,28 @@ function draw(){
 }
 
 
-/* =========================
-   新しい曲 START
-========================= */
+/* START */
 
 function startImmediately(){
-
-  /*
-    新しい曲なので
-    補正を0へ戻す
-  */
 
   correction.value = 0;
 
   correctionValue.textContent =
     "0.0秒";
 
-
-  /*
-    完全に0からSTART
-  */
-
-  stoppedElapsed = 0;
-
   startRealTime =
     Date.now();
 
-  running =
-    true;
+  stoppedElapsed = 0;
+
+  running = true;
 
   timer.textContent =
     "00:00.0";
 
-
   saveTimerState();
 
-
-  if(animationId !== null){
+  if(animationId){
 
     cancelAnimationFrame(
       animationId
@@ -1231,20 +1089,16 @@ function startImmediately(){
 
   }
 
-
   animationId =
     requestAnimationFrame(
       draw
     );
 
-
   flash.classList.remove(
     "active"
   );
 
-
   void flash.offsetWidth;
-
 
   flash.classList.add(
     "active"
@@ -1253,9 +1107,7 @@ function startImmediately(){
 }
 
 
-/* =========================
-   STOP
-========================= */
+/* STOP */
 
 function stopTimer(){
 
@@ -1263,46 +1115,36 @@ function stopTimer(){
     return;
   }
 
-
   /*
     STOPを押した瞬間の
-    正確な時間を保存
+    表示時間を固定
   */
 
   stoppedElapsed =
     getElapsed();
 
+  running = false;
 
-  running =
-    false;
-
-
-  if(animationId !== null){
+  if(animationId){
 
     cancelAnimationFrame(
       animationId
     );
 
-    animationId =
-      null;
-
+    animationId = null;
   }
-
 
   timer.textContent =
     formatTime(
       stoppedElapsed
     );
 
-
   saveTimerState();
 
 }
 
 
-/* =========================
-   START操作
-========================= */
+/* START操作 */
 
 startArea.addEventListener(
   "pointerdown",
@@ -1316,7 +1158,6 @@ startArea.addEventListener(
       return;
     }
 
-
     startImmediately();
 
   },
@@ -1326,7 +1167,7 @@ startArea.addEventListener(
 );
 
 
-/* 古いiPhone用 */
+/* 古いiPhone */
 
 startArea.addEventListener(
   "touchstart",
@@ -1336,7 +1177,6 @@ startArea.addEventListener(
       return;
     }
 
-
     if(
       settings.classList.contains(
         "open"
@@ -1344,7 +1184,6 @@ startArea.addEventListener(
     ){
       return;
     }
-
 
     startImmediately();
 
@@ -1355,16 +1194,14 @@ startArea.addEventListener(
 );
 
 
-/* =========================
-   STOP操作
-========================= */
+/* STOP操作
+   STARTとは完全に別 */
 
 stopButton.addEventListener(
   "pointerdown",
   event => {
 
     event.preventDefault();
-
     event.stopPropagation();
 
     stopTimer();
@@ -1375,8 +1212,6 @@ stopButton.addEventListener(
   }
 );
 
-
-/* 古いiPhone用 */
 
 stopButton.addEventListener(
   "touchstart",
@@ -1386,9 +1221,7 @@ stopButton.addEventListener(
       return;
     }
 
-
     event.preventDefault();
-
     event.stopPropagation();
 
     stopTimer();
@@ -1400,9 +1233,7 @@ stopButton.addEventListener(
 );
 
 
-/* =========================
-   曲中の補正
-========================= */
+/* 補正 */
 
 function updateCorrection(){
 
@@ -1410,7 +1241,6 @@ function updateCorrection(){
     Number(
       correction.value
     );
-
 
   if(value > 0){
 
@@ -1431,18 +1261,12 @@ function updateCorrection(){
 
   }
 
-
-  /*
-    曲中だけ補正を反映
-  */
-
   if(running){
 
     timer.textContent =
       formatTime(
         getElapsed()
       );
-
 
     saveTimerState();
 
@@ -1451,17 +1275,13 @@ function updateCorrection(){
 }
 
 
-/* スライダー操作 */
-
 correction.addEventListener(
   "input",
   updateCorrection
 );
 
 
-/* =========================
-   設定
-========================= */
+/* 設定 */
 
 settingsButton.addEventListener(
   "pointerdown",
@@ -1499,14 +1319,9 @@ closeSettings.addEventListener(
 );
 
 
-/* =========================
-   表示設定保存
-========================= */
+/* 設定保存 */
 
-function saveSetting(
-  name,
-  value
-){
+function saveSetting(name,value){
 
   try{
 
@@ -1521,10 +1336,7 @@ function saveSetting(
 }
 
 
-function loadSetting(
-  name,
-  fallback
-){
+function loadSetting(name,fallback){
 
   try{
 
@@ -1546,9 +1358,7 @@ function loadSetting(
 }
 
 
-/* =========================
-   サイズ
-========================= */
+/* サイズ */
 
 function applySize(value){
 
@@ -1561,19 +1371,15 @@ function applySize(value){
       )
     );
 
-
   sizeSetting.value =
     value;
-
 
   sizeValue.textContent =
     value + "%";
 
-
   const vw =
     23 *
     (value / 100);
-
 
   timer.style.fontSize =
     "clamp(70px,"
@@ -1581,7 +1387,6 @@ function applySize(value){
     vw
     +
     "vw,230px)";
-
 
   preview.style.fontSize =
     (
@@ -1591,7 +1396,6 @@ function applySize(value){
     )
     +
     "px";
-
 
   saveSetting(
     "size",
@@ -1613,30 +1417,24 @@ sizeSetting.addEventListener(
 );
 
 
-/* =========================
-   太さ
-========================= */
+/* 太さ */
 
 function weightName(value){
 
   value =
     Number(value);
 
-
   if(value <= 300){
     return "細い";
   }
-
 
   if(value <= 500){
     return "標準";
   }
 
-
   if(value <= 700){
     return "太字";
   }
-
 
   return "極太";
 
@@ -1654,22 +1452,17 @@ function applyWeight(value){
       )
     );
 
-
   timer.style.fontWeight =
     value;
-
 
   preview.style.fontWeight =
     value;
 
-
   weightSetting.value =
     value;
 
-
   weightValue.textContent =
     weightName(value);
-
 
   saveSetting(
     "weight",
@@ -1691,9 +1484,7 @@ weightSetting.addEventListener(
 );
 
 
-/* =========================
-   フォント
-========================= */
+/* フォント */
 
 const fontButtons =
   document.querySelectorAll(
@@ -1706,10 +1497,8 @@ function applyFont(font){
   timer.style.fontFamily =
     font;
 
-
   preview.style.fontFamily =
     font;
-
 
   fontButtons.forEach(
     button => {
@@ -1721,7 +1510,6 @@ function applyFont(font){
 
     }
   );
-
 
   saveSetting(
     "font",
@@ -1749,9 +1537,7 @@ fontButtons.forEach(
 );
 
 
-/* =========================
-   色
-========================= */
+/* 色 */
 
 const colorButtons =
   document.querySelectorAll(
@@ -1764,10 +1550,8 @@ function applyColor(color){
   timer.style.color =
     color;
 
-
   preview.style.color =
     color;
-
 
   colorButtons.forEach(
     button => {
@@ -1779,7 +1563,6 @@ function applyColor(color){
 
     }
   );
-
 
   saveSetting(
     "color",
@@ -1807,9 +1590,7 @@ colorButtons.forEach(
 );
 
 
-/* =========================
-   設定リセット
-========================= */
+/* 設定リセット */
 
 document
 .getElementById(
@@ -1835,9 +1616,7 @@ document
 );
 
 
-/* =========================
-   表示設定復元
-========================= */
+/* 設定復元 */
 
 applySize(
   loadSetting(
@@ -1846,7 +1625,6 @@ applySize(
   )
 );
 
-
 applyWeight(
   loadSetting(
     "weight",
@@ -1854,14 +1632,12 @@ applyWeight(
   )
 );
 
-
 applyFont(
   loadSetting(
     "font",
     "Arial, sans-serif"
   )
 );
-
 
 applyColor(
   loadSetting(
@@ -1871,13 +1647,10 @@ applyColor(
 );
 
 
-/* =========================
-   タイマー復元
-========================= */
+/* タイマー復元 */
 
 const restored =
   restoreTimerState();
-
 
 updateCorrection();
 
@@ -1888,7 +1661,6 @@ if(restored){
     formatTime(
       getElapsed()
     );
-
 
   if(running){
 
@@ -1907,16 +1679,13 @@ else{
   correctionValue.textContent =
     "0.0秒";
 
-
   timer.textContent =
     "00:00.0";
 
 }
 
 
-/* =========================
-   他アプリへ移動・復帰
-========================= */
+/* 他アプリへ移動・復帰 */
 
 document.addEventListener(
   "visibilitychange",
@@ -1928,11 +1697,6 @@ document.addEventListener(
       "visible"
     ){
 
-      /*
-        START中なら
-        実時間から再計算
-      */
-
       if(running){
 
         timer.textContent =
@@ -1940,8 +1704,7 @@ document.addEventListener(
             getElapsed()
           );
 
-
-        if(animationId !== null){
+        if(animationId){
 
           cancelAnimationFrame(
             animationId
@@ -1949,19 +1712,12 @@ document.addEventListener(
 
         }
 
-
         animationId =
           requestAnimationFrame(
             draw
           );
 
       }
-
-      /*
-        STOP中なら
-        停止時間をそのまま表示
-      */
-
       else{
 
         timer.textContent =
@@ -1974,22 +1730,15 @@ document.addEventListener(
     }
     else{
 
-      /*
-        現在状態を保存
-      */
-
       saveTimerState();
 
-
-      if(animationId !== null){
+      if(animationId){
 
         cancelAnimationFrame(
           animationId
         );
 
-
-        animationId =
-          null;
+        animationId = null;
 
       }
 
@@ -1999,9 +1748,7 @@ document.addEventListener(
 );
 
 
-/* =========================
-   画面スリープ防止
-========================= */
+/* スリープ防止 */
 
 let wakeLock = null;
 
@@ -2017,7 +1764,6 @@ async function keepScreenAwake(){
   ){
     return;
   }
-
 
   try{
 
@@ -2035,7 +1781,6 @@ async function keepScreenAwake(){
         .request(
           "screen"
         );
-
 
       wakeLock.addEventListener(
         "release",
@@ -2058,8 +1803,6 @@ async function keepScreenAwake(){
 }
 
 
-/* 最初のSTARTでスリープ防止 */
-
 startArea.addEventListener(
   "pointerdown",
   keepScreenAwake,
@@ -2069,8 +1812,6 @@ startArea.addEventListener(
   }
 );
 
-
-/* 他アプリから戻った時 */
 
 document.addEventListener(
   "visibilitychange",
